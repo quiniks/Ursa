@@ -1,13 +1,9 @@
 #include "ursapch.h"
 #include "ImGuiLayer.h"
 
-#pragma warning(push)
-#pragma warning(disable : 6011)
-#pragma warning(disable : 26495)
 #include "imgui.h"
 #include "examples/imgui_impl_opengl3.h"
 #include "examples/imgui_impl_glfw.h"
-#pragma warning(pop)
 
 
 #include "Ursa/Core/Application.h"
@@ -64,6 +60,13 @@ namespace Ursa {
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
+	}
+
+	void ImGuiLayer::OnEvent(Event& event)
+	{
+		//ImGuiIO& io = ImGui::GetIO();
+		//event.Handled |= event.IsInCategory(EventCategory::EventCategoryMouse) & io.WantCaptureMouse;
+		//event.Handled |= event.IsInCategory(EventCategory::EventCategoryKeyboard) & io.WantCaptureKeyboard;
 	}
 
 	void ImGuiLayer::Begin()

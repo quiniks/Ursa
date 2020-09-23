@@ -1,9 +1,4 @@
 #include "EditorLayer.h"
-#pragma warning(push)
-#pragma warning(disable : 6011)
-#pragma warning(disable : 26495)
-#include "imgui/imgui.h"
-#pragma warning(pop)
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -172,18 +167,28 @@ namespace Ursa {
 			ImGui::EndMenuBar();
 		}
 
-		ImGui::Begin("SandBox");
-		/*
+		ImGui::Begin("Stats");
 		auto stats = Renderer2D::GetStats();
 		ImGui::Text("Renderer2D stats");
 		ImGui::Text("Draw calls: %d", stats.DrawCalls);
 		ImGui::Text("Quads: %d", stats.QuadCount);
 		ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
 		ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
-		*/
-		uint32_t textureID = m_FrameBuffer->GetColorAttachmentRendererID();
-		ImGui::Image((void*)textureID, ImVec2(1280.0f, 720.0f), ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 		ImGui::End();
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
+		ImGui::Begin("Viewport");
+		ImVec2 viewportSize = ImGui::GetContentRegionAvail();
+		if (m_ViewportSize.x != viewportSize.x || m_ViewportSize.y != viewportSize.y)
+		{
+			m_FrameBuffer->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+			m_ViewportSize = viewportSize;
+			m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
+		}
+		uint32_t textureID = m_FrameBuffer->GetColorAttachmentRendererID();
+		ImGui::Image((void*)textureID, m_ViewportSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+		ImGui::End();
+		ImGui::PopStyleVar();
 
 		ImGui::End();
 	}

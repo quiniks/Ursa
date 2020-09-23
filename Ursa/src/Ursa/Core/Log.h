@@ -1,15 +1,11 @@
 #pragma once
 
 #include "Core.h"
-#pragma warning (push)
-#pragma warning (disable : 26812)
-#pragma warning (disable : 26495)
-#pragma warning (disable : 26451)
-#pragma warning (disable : 6385)
+
 #include "spdlog/spdlog.h"
 #include "spdlog/fmt/ostr.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
-#pragma warning (pop)
+
 
 namespace Ursa {
 	class Log

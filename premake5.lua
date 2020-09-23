@@ -1,6 +1,6 @@
 workspace "Ursa"
 	architecture "x64"
-	startproject "Sandbox"
+	startproject "Ursa-Editor"
 
 	configurations {
 		"Debug",

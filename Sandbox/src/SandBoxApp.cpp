@@ -1,11 +1,8 @@
 #include <Ursa.h>
 #include "Ursa/Core/EntryPoint.h"
 
-#pragma warning(push)
-#pragma warning(disable : 6011)
-#pragma warning(disable : 26495)
+
 #include "imgui/imgui.h"
-#pragma warning(pop)
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
