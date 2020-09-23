@@ -1,0 +1,2 @@
+D:\SAM\PROJECTS\Ursa-2\Ursa-1cfca2242c00ab94c0497e0f122631348506ffc1\bin\Debug-windows-x86_64\Ursa\Ursa.pdb
+D:\SAM\PROJECTS\Ursa-2\Ursa-1cfca2242c00ab94c0497e0f122631348506ffc1\bin-int\Debug-windows-x86_64\Ursa\Ursa.pdb

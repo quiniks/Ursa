@@ -1,0 +1,6 @@
+D:\SAM\PROJECTS\Ursa\Ursa\vendor\Glad\bin\Debug-windows-x86_64\Glad\Glad.pdb
+D:\SAM\PROJECTS\Ursa\Ursa\vendor\Glad\bin-int\Debug-windows-x86_64\Glad\Glad.pdb
+D:\SAM\PROJECTS\Ursa\Ursa\vendor\Glad\bin\Debug-windows-x86_64\Glad\Glad.lib.lastcodeanalysissucceeded
+D:\SAM\PROJECTS\Ursa\Ursa\vendor\Glad\bin-int\Debug-windows-x86_64\Glad\NativeCodeAnalysis.read.1.tlog
+D:\SAM\PROJECTS\Ursa-2\Ursa-1cfca2242c00ab94c0497e0f122631348506ffc1\Ursa\vendor\Glad\bin\Debug-windows-x86_64\Glad\Glad.pdb
+D:\SAM\PROJECTS\Ursa-2\Ursa-1cfca2242c00ab94c0497e0f122631348506ffc1\Ursa\vendor\Glad\bin-int\Debug-windows-x86_64\Glad\Glad.pdb

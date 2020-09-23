@@ -1,0 +1,14 @@
+#pragma once
+
+#define URSA_MOUSE_BUTTON_1         0
+#define URSA_MOUSE_BUTTON_2         1
+#define URSA_MOUSE_BUTTON_3         2
+#define URSA_MOUSE_BUTTON_4         3
+#define URSA_MOUSE_BUTTON_5         4
+#define URSA_MOUSE_BUTTON_6         5
+#define URSA_MOUSE_BUTTON_7         6
+#define URSA_MOUSE_BUTTON_8         7
+#define URSA_MOUSE_BUTTON_LAST      URSA_MOUSE_BUTTON_8
+#define URSA_MOUSE_BUTTON_LEFT      URSA_MOUSE_BUTTON_1
+#define URSA_MOUSE_BUTTON_RIGHT     URSA_MOUSE_BUTTON_2
+#define URSA_MOUSE_BUTTON_MIDDLE    URSA_MOUSE_BUTTON_3
