@@ -27,5 +27,7 @@ namespace Ursa {
 		std::unordered_map<char, Ref<SubTexture2D>> m_TextureMap;
 		uint32_t m_MapWidth = 0, m_MapHeight = 0;
 		ImVec2 m_ViewportSize = {0.0f, 0.0f};
+		bool m_ViewportFocused = false;
+		bool m_ViewportHovered = false;
 	};
 }

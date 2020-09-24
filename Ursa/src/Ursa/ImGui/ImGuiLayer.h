@@ -17,7 +17,10 @@ namespace Ursa {
 
 		void Begin();
 		void End();
+
+		void SetBlockEvents(bool blockEvents) { m_BlockEvents = blockEvents; }
 	private:
+		bool m_BlockEvents = true;
 		float m_Time = 0.0f;
 	};
 }

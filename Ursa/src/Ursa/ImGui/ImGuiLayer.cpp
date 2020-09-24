@@ -64,9 +64,11 @@ namespace Ursa {
 
 	void ImGuiLayer::OnEvent(Event& event)
 	{
-		//ImGuiIO& io = ImGui::GetIO();
-		//event.Handled |= event.IsInCategory(EventCategory::EventCategoryMouse) & io.WantCaptureMouse;
-		//event.Handled |= event.IsInCategory(EventCategory::EventCategoryKeyboard) & io.WantCaptureKeyboard;
+		if (m_BlockEvents) {
+			ImGuiIO& io = ImGui::GetIO();
+			event.Handled |= event.IsInCategory(EventCategory::EventCategoryMouse) & io.WantCaptureMouse;
+			event.Handled |= event.IsInCategory(EventCategory::EventCategoryKeyboard) & io.WantCaptureKeyboard;
+		}
 	}
 
 	void ImGuiLayer::Begin()
