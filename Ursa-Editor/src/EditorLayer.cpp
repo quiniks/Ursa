@@ -14,7 +14,7 @@ namespace Ursa {
 		"GGGGBGGGG"
 		"GGGGWGGGG"
 		"GGTGWGGGG"
-		"GGGGWGGAG"
+		"GGGGWGGTG"
 		"GGGGWGGGG";
 
 	EditorLayer::EditorLayer()
@@ -111,7 +111,7 @@ namespace Ursa {
 		static bool dockspaceOpen = true;
 		static bool opt_fullscreen_persistant = true;
 		bool opt_fullscreen = opt_fullscreen_persistant;
-		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_AutoHideTabBar;
 
 		// We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
 		// because it would be confusing to have two docking targets within each others.
@@ -185,7 +185,7 @@ namespace Ursa {
 		Application::Get().GetImGuiLayer()->SetBlockEvents(!m_ViewportFocused || !m_ViewportHovered);
 
 		ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-		if (m_ViewportSize.x != viewportSize.x || m_ViewportSize.y != viewportSize.y)
+		if ((m_ViewportSize.x != viewportSize.x || m_ViewportSize.y != viewportSize.y) && viewportSize.x > 0.0f && viewportSize.y > 0.0f)
 		{
 			m_FrameBuffer->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
 			m_ViewportSize = viewportSize;

@@ -53,7 +53,7 @@ namespace Ursa {
 
 		bool IsInCategory(EventCategory category)
 		{
-			URSA_CORE_TRACE("Is in category: {0} : {1}", category, bool(GetCategoryFlags() & category));
+			//URSA_CORE_TRACE("Is in category: {0} : {1}", category, bool(GetCategoryFlags() & category));
 			return bool(GetCategoryFlags() & category);
 		}
 	};
