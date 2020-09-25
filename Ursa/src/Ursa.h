@@ -11,6 +11,9 @@
 #include "Ursa/Core/KeyCodes.h"
 #include "Ursa/Core/MouseCodes.h"
 
+#include "Ursa/Scene/Scene.h"
+#include "Ursa/Scene/Components.h"
+
 #include "Ursa/Renderer/Renderer.h"
 #include "Ursa/Renderer/Renderer2D.h"
 #include "Ursa/Renderer/RenderCommand.h"

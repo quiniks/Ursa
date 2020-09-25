@@ -44,6 +44,9 @@ namespace Ursa {
 		fbspec.Width = 1280;
 		fbspec.Height = 720;
 		m_FrameBuffer = FrameBuffer::Create(fbspec);
+
+		m_ActiveScene = CreateRef<Scene>();
+		auto entity = m_ActiveScene->CreateEntity();
 	}
 
 	void EditorLayer::OnDetach()
@@ -57,6 +60,9 @@ namespace Ursa {
 		//Update
 		if (m_ViewportFocused)
 			m_CameraController.OnUpdate(ts);
+		//Update scene
+		m_ActiveScene->OnUpdate(ts);
+
 		//Render
 		Renderer2D::ResetStats();
 

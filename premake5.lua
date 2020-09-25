@@ -17,6 +17,7 @@ IncludeDir["Glad"] = "Ursa/vendor/Glad/include"
 IncludeDir["ImGui"] = "Ursa/vendor/imgui"
 IncludeDir["glm"] = "Ursa/vendor/glm"
 IncludeDir["stb_image"] = "Ursa/vendor/stb_image"
+IncludeDir["entt"] = "Ursa/vendor/entt/include"
 
 group "Dependencies"
 	include "Ursa/vendor/GLFW"
@@ -53,7 +54,8 @@ project "Ursa"
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.stb_image}"
+		"%{IncludeDir.stb_image}",
+		"%{IncludeDir.entt}"
 	}
 
 	links {
@@ -109,8 +111,8 @@ project "Sandbox"
 		"Ursa/vendor/spdlog/include",
 		"Ursa/src",
 		"Ursa/vendor",
-		"%{IncludeDir.glm}"
-
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.entt}"
 	}
 
 	links {
@@ -154,8 +156,8 @@ project "Ursa-Editor"
 		"Ursa/vendor/spdlog/include",
 		"Ursa/src",
 		"Ursa/vendor",
-		"%{IncludeDir.glm}"
-
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.entt}"
 	}
 
 	links {
