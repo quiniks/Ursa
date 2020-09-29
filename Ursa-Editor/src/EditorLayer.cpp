@@ -46,7 +46,10 @@ namespace Ursa {
 		m_FrameBuffer = FrameBuffer::Create(fbspec);
 
 		m_ActiveScene = CreateRef<Scene>();
-		auto entity = m_ActiveScene->CreateEntity();
+		auto quad = m_ActiveScene->CreateEntity("Quad");
+		auto quad2 = m_ActiveScene->CreateEntity("Quad2");
+		quad.AddComponent<SpriteComponent>(glm::vec4{ 0.9f, 0.9f, 0.3f, 1.0f });
+		m_QuadEntity = quad2;
 	}
 
 	void EditorLayer::OnDetach()
@@ -60,8 +63,6 @@ namespace Ursa {
 		//Update
 		if (m_ViewportFocused)
 			m_CameraController.OnUpdate(ts);
-		//Update scene
-		m_ActiveScene->OnUpdate(ts);
 
 		//Render
 		Renderer2D::ResetStats();
@@ -79,6 +80,8 @@ namespace Ursa {
 			URSA_PROFILE_SCOPE("Renderer Draw");
 			Renderer2D::BeginScene(m_CameraController.GetCamera());
 			Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 20.0f, 20.0f }, 0.0f, m_CheckerTexture, { 10.0f, 10.0f }, { 0.1f, 0.1f, 0.1f, 1.0f });
+			//Update scene
+			m_ActiveScene->OnUpdate(ts);
 
 			//Renderer2D::DrawQuad({ -0.5f, 0.0f }, { 0.7f, 0.7f }, glm::radians(rotation), { 0.8f, 0.2f, 0.3f, 1.0f });
 			//Renderer2D::DrawQuad({ 0.5f, 0.0f }, { 0.5f, 0.7f }, 0.0f, { 0.4f, 0.8f, 0.8f, 1.0f });
@@ -90,7 +93,7 @@ namespace Ursa {
 				}
 			}
 			*/
-
+			/*
 			for (uint32_t y = 0; y < m_MapHeight; y++) {
 				for (uint32_t x = 0; x < m_MapWidth; x++) {
 					char tileType = s_MapTiles[x + y * m_MapWidth];
@@ -101,7 +104,7 @@ namespace Ursa {
 						texture = m_TextureMap['?'];
 					Renderer2D::DrawQuad({ x + 0.5f - m_MapWidth / 2.0f, m_MapHeight - y - 0.5f - m_MapHeight / 2.0f, 0.5f }, { 1.0f, 1.0f }, 0.0f, texture);
 				}
-			}
+			}*/
 
 
 			//Renderer2D::DrawQuad({ 0.0f, 0.0f, 0.2f }, { 3.8f, 2.0f }, 0.0f, m_UrsaTitle);

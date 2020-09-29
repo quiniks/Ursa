@@ -1409,6 +1409,7 @@
     </ClInclude>
     <ClInclude Include="src\Ursa\Scene\Scene.h" />
     <ClInclude Include="src\Ursa\Scene\Components.h" />
+    <ClInclude Include="src\Ursa\Scene\Entity.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
@@ -1502,5 +1503,6 @@
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
     <ClCompile Include="src\Ursa\Scene\Scene.cpp" />
+    <ClCompile Include="src\Ursa\Scene\Entity.cpp" />
   </ItemGroup>
 </Project>

@@ -18,7 +18,7 @@ namespace Ursa {
 		Ursa::OrthographicCameraController m_CameraController;
 
 		Ref<Scene> m_ActiveScene;
-		//Temporary
+		Entity m_QuadEntity;
 		Ref<VertexArray> m_SquareVertexArray;
 		Ref<Shader> m_FlatColorShader;
 		Ref<FrameBuffer> m_FrameBuffer;

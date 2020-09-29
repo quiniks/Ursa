@@ -13,6 +13,7 @@
 
 #include "Ursa/Scene/Scene.h"
 #include "Ursa/Scene/Components.h"
+#include "Ursa/Scene/Entity.h"
 
 #include "Ursa/Renderer/Renderer.h"
 #include "Ursa/Renderer/Renderer2D.h"

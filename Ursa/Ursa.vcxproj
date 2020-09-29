@@ -191,6 +191,7 @@
     <ClInclude Include="src\Ursa\Renderer\VertexArray.h" />
     <ClInclude Include="src\ursapch.h" />
     <ClInclude Include="src\Ursa\Scene\Components.h" />
+    <ClInclude Include="src\Ursa\Scene\Entity.h" />
     <ClInclude Include="src\Ursa\Scene\Scene.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_features.hpp" />
@@ -634,6 +635,7 @@
     <ClCompile Include="src\ursapch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Ursa\Scene\Entity.cpp" />
     <ClCompile Include="src\Ursa\Scene\Scene.cpp" />
     <ClCompile Include="vendor\stb_image\stb_image.cpp" />
   </ItemGroup>
