@@ -27,10 +27,44 @@ namespace Ursa {
 
 	void Scene::OnUpdate(TimeStep ts)
 	{
-		auto group = m_Registry.group<TransformComponent>(entt::get<SpriteComponent>);
-		for (auto entity : group) {
-			auto& [transform, sprite] = group.get<TransformComponent, SpriteComponent>(entity);
-			Renderer2D::DrawQuad(transform, sprite.Color);
+		//Render 2D
+		Camera* primaryCamera = nullptr;
+		glm::mat4* primaryTransform = nullptr;
+		auto view = m_Registry.view<TransformComponent, CameraComponent>();
+		for (auto entity : view) {
+			auto& [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
+			if (camera.Primary) {
+				primaryCamera = &camera.Camera;
+				primaryTransform = &transform.Transform;
+				break;
+			}
+		}
+
+		if (primaryCamera) {
+			Renderer2D::BeginScene(primaryCamera->GetProjection(), *primaryTransform);
+
+			auto group = m_Registry.group<TransformComponent>(entt::get<SpriteComponent>);
+			for (auto entity : group) {
+				auto& [transform, sprite] = group.get<TransformComponent, SpriteComponent>(entity);
+				Renderer2D::DrawQuad(transform, sprite.Color);
+			}
+
+			Renderer2D::EndScene();
+		}
+	}
+
+	void Scene::OnViewportResize(uint32_t width, uint32_t height)
+	{
+		m_ViewportWidth = width;
+		m_ViewportHeight = height;
+
+		//resize our non-fixed aspect ratio cameras
+		auto view = m_Registry.view<CameraComponent>();
+		for (auto entity : view) {
+			auto& camera = view.get<CameraComponent>(entity);
+			if (!camera.FixedAspectRatio) {
+				camera
+			}
 		}
 	}
 }

@@ -177,6 +177,7 @@
     <ClInclude Include="src\Ursa\Events\MouseEvent.h" />
     <ClInclude Include="src\Ursa\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\Ursa\Renderer\Buffer.h" />
+    <ClInclude Include="src\Ursa\Renderer\Camera.h" />
     <ClInclude Include="src\Ursa\Renderer\FrameBuffer.h" />
     <ClInclude Include="src\Ursa\Renderer\OrthographicCamera.h" />
     <ClInclude Include="src\Ursa\Renderer\OrthographicCameraController.h" />
@@ -193,6 +194,7 @@
     <ClInclude Include="src\Ursa\Scene\Components.h" />
     <ClInclude Include="src\Ursa\Scene\Entity.h" />
     <ClInclude Include="src\Ursa\Scene\Scene.h" />
+    <ClInclude Include="src\Ursa\Scene\SceneCamera.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_features.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_fixes.hpp" />

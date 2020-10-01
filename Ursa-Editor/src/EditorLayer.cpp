@@ -46,10 +46,10 @@ namespace Ursa {
 		m_FrameBuffer = FrameBuffer::Create(fbspec);
 
 		m_ActiveScene = CreateRef<Scene>();
-		auto quad = m_ActiveScene->CreateEntity("Quad");
-		auto quad2 = m_ActiveScene->CreateEntity("Quad2");
-		quad.AddComponent<SpriteComponent>(glm::vec4{ 0.9f, 0.9f, 0.3f, 1.0f });
-		m_QuadEntity = quad2;
+		m_QuadEntity = m_ActiveScene->CreateEntity("Quad Entity");
+		m_QuadEntity.AddComponent<SpriteComponent>(glm::vec4{ 0.9f, 0.9f, 0.3f, 1.0f });
+		m_CameraEntity = m_ActiveScene->CreateEntity("Camera Entity");
+		m_CameraEntity.AddComponent<CameraComponent>(glm::ortho(-16.0f, 16.0f, -9.0f, 9.0f, -1.0f, 1.0f));
 	}
 
 	void EditorLayer::OnDetach()
@@ -60,28 +60,37 @@ namespace Ursa {
 	void EditorLayer::OnUpdate(TimeStep ts)
 	{
 		URSA_PROFILE_FUNCTION();
+
+		//Resize
+		if (FrameBufferSpecification fbspec = m_FrameBuffer->GetSpecification();
+			m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f && 
+			(fbspec.Width != m_ViewportSize.x || fbspec.Height != m_ViewportSize.y))
+		{
+			m_FrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
+			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		}
+
 		//Update
 		if (m_ViewportFocused)
 			m_CameraController.OnUpdate(ts);
 
 		//Render
 		Renderer2D::ResetStats();
+		m_FrameBuffer->Bind();
+		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+		RenderCommand::Clear();
+		m_ActiveScene->OnUpdate(ts);
+		m_FrameBuffer->Unbind();
 
-		{
-			URSA_PROFILE_SCOPE("Renderer Prep");
-			m_FrameBuffer->Bind();
-			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
-			RenderCommand::Clear();
-		}
-
-		{
-			static float rotation = 0.0f;
-			rotation += ts * 20.0f;
-			URSA_PROFILE_SCOPE("Renderer Draw");
-			Renderer2D::BeginScene(m_CameraController.GetCamera());
-			Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 20.0f, 20.0f }, 0.0f, m_CheckerTexture, { 10.0f, 10.0f }, { 0.1f, 0.1f, 0.1f, 1.0f });
+		/*
+			//static float rotation = 0.0f;
+			//rotation += ts * 20.0f;
+			//URSA_PROFILE_SCOPE("Renderer Draw");
+			//Renderer2D::BeginScene(m_CameraController.GetCamera());
+			//Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 20.0f, 20.0f }, 0.0f, m_CheckerTexture, { 10.0f, 10.0f }, { 0.1f, 0.1f, 0.1f, 1.0f });
 			//Update scene
-			m_ActiveScene->OnUpdate(ts);
+			//m_ActiveScene->OnUpdate(ts);
 
 			//Renderer2D::DrawQuad({ -0.5f, 0.0f }, { 0.7f, 0.7f }, glm::radians(rotation), { 0.8f, 0.2f, 0.3f, 1.0f });
 			//Renderer2D::DrawQuad({ 0.5f, 0.0f }, { 0.5f, 0.7f }, 0.0f, { 0.4f, 0.8f, 0.8f, 1.0f });
@@ -92,8 +101,8 @@ namespace Ursa {
 					Renderer2D::DrawQuad({ x, y }, { 0.45f, 0.45f }, 0.0f, color);
 				}
 			}
-			*/
-			/*
+			
+			
 			for (uint32_t y = 0; y < m_MapHeight; y++) {
 				for (uint32_t x = 0; x < m_MapWidth; x++) {
 					char tileType = s_MapTiles[x + y * m_MapWidth];
@@ -104,13 +113,13 @@ namespace Ursa {
 						texture = m_TextureMap['?'];
 					Renderer2D::DrawQuad({ x + 0.5f - m_MapWidth / 2.0f, m_MapHeight - y - 0.5f - m_MapHeight / 2.0f, 0.5f }, { 1.0f, 1.0f }, 0.0f, texture);
 				}
-			}*/
+			}
 
 
 			//Renderer2D::DrawQuad({ 0.0f, 0.0f, 0.2f }, { 3.8f, 2.0f }, 0.0f, m_UrsaTitle);
-			Renderer2D::EndScene();
-			m_FrameBuffer->Unbind();
-		}
+			//Renderer2D::EndScene();
+		//m_FrameBuffer->Unbind();
+		*/
 	}
 
 	void EditorLayer::OnImGuiRender()
@@ -194,14 +203,10 @@ namespace Ursa {
 		Application::Get().GetImGuiLayer()->SetBlockEvents(!m_ViewportFocused || !m_ViewportHovered);
 
 		ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-		if ((m_ViewportSize.x != viewportSize.x || m_ViewportSize.y != viewportSize.y) && viewportSize.x > 0.0f && viewportSize.y > 0.0f)
-		{
-			m_FrameBuffer->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
-			m_ViewportSize = viewportSize;
-			m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
-		}
+		m_ViewportSize = { viewportSize.x, viewportSize.y };
+
 		uint32_t textureID = m_FrameBuffer->GetColorAttachmentRendererID();
-		ImGui::Image((void*)textureID, m_ViewportSize, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+		ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 		ImGui::End();
 		ImGui::PopStyleVar();
 

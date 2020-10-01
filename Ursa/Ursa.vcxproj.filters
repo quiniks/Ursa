@@ -1410,6 +1410,8 @@
     <ClInclude Include="src\Ursa\Scene\Scene.h" />
     <ClInclude Include="src\Ursa\Scene\Components.h" />
     <ClInclude Include="src\Ursa\Scene\Entity.h" />
+    <ClInclude Include="src\Ursa\Renderer\Camera.h" />
+    <ClInclude Include="src\Ursa\Scene\SceneCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">

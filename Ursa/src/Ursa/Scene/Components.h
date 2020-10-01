@@ -1,5 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
+#include "Ursa/Renderer/Camera.h"
 
 namespace Ursa {
 	struct TagComponent {
@@ -24,5 +25,15 @@ namespace Ursa {
 		SpriteComponent() = default;
 		SpriteComponent(const SpriteComponent&) = default;
 		SpriteComponent(const glm::vec4& color) : Color(color) {}
+	};
+
+	struct CameraComponent {
+		Ursa::Camera Camera;
+		bool Primary = true;	//todo move to scene
+		bool FixedAspectRatio = false;
+
+		CameraComponent() = default;
+		CameraComponent(const CameraComponent&) = default;
+		CameraComponent(const glm::mat4& projection) : Camera(projection) {}
 	};
 }

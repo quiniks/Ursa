@@ -19,6 +19,8 @@ namespace Ursa {
 
 		Ref<Scene> m_ActiveScene;
 		Entity m_QuadEntity;
+		Entity m_CameraEntity;
+
 		Ref<VertexArray> m_SquareVertexArray;
 		Ref<Shader> m_FlatColorShader;
 		Ref<FrameBuffer> m_FrameBuffer;
@@ -27,7 +29,7 @@ namespace Ursa {
 		Ref<Texture2D> m_UrsaTitle;
 		std::unordered_map<char, Ref<SubTexture2D>> m_TextureMap;
 		uint32_t m_MapWidth = 0, m_MapHeight = 0;
-		ImVec2 m_ViewportSize = {0.0f, 0.0f};
+		glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
 		bool m_ViewportFocused = false;
 		bool m_ViewportHovered = false;
 	};
