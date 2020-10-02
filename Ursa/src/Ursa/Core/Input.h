@@ -1,11 +1,13 @@
 #pragma once
+#include "Ursa/Core/KeyCodes.h"
+#include "Ursa/Core/MouseCodes.h"
 
 namespace Ursa {
 	class Input {
 	public:
-		static bool IsKeyPressed(int keycode);
+		static bool IsKeyPressed(KeyCode Key);
 
-		static bool IsMouseButtonPressed(int button);
+		static bool IsMouseButtonPressed(MouseCode button);
 		static float GetMouseX();
 		static float GetMouseY();
 		static std::pair<float, float> GetMousePos();

@@ -27,15 +27,28 @@ namespace Ursa {
 
 	void Scene::OnUpdate(TimeStep ts)
 	{
+		//Update scripts
+		m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& nsc) {
+			if (!nsc.Instance) {
+				nsc.InstantiateFunction();
+				nsc.Instance->m_Entity = Entity{ entity, this };
+
+				if (nsc.OnCreateFunction)
+					nsc.OnCreateFunction(nsc.Instance);
+			}
+			if (nsc.OnUpdateFunction)
+			nsc.OnUpdateFunction(nsc.Instance, ts);
+		});
+		////
 		//Render 2D
 		Camera* primaryCamera = nullptr;
 		glm::mat4* primaryTransform = nullptr;
 		auto view = m_Registry.view<TransformComponent, CameraComponent>();
 		for (auto entity : view) {
-			auto& [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
-			if (camera.Primary) {
-				primaryCamera = &camera.Camera;
-				primaryTransform = &transform.Transform;
+			auto [transformComponent, cameraComponent] = view.get<TransformComponent, CameraComponent>(entity);
+			if (cameraComponent.Primary) {
+				primaryCamera = &cameraComponent.Camera;
+				primaryTransform = &transformComponent.Transform;
 				break;
 			}
 		}
@@ -45,12 +58,13 @@ namespace Ursa {
 
 			auto group = m_Registry.group<TransformComponent>(entt::get<SpriteComponent>);
 			for (auto entity : group) {
-				auto& [transform, sprite] = group.get<TransformComponent, SpriteComponent>(entity);
-				Renderer2D::DrawQuad(transform, sprite.Color);
+				auto& [transformComponent, spriteComponent] = group.get<TransformComponent, SpriteComponent>(entity);
+				Renderer2D::DrawQuad(transformComponent, spriteComponent.Color);
 			}
 
 			Renderer2D::EndScene();
 		}
+		////
 	}
 
 	void Scene::OnViewportResize(uint32_t width, uint32_t height)
@@ -61,10 +75,9 @@ namespace Ursa {
 		//resize our non-fixed aspect ratio cameras
 		auto view = m_Registry.view<CameraComponent>();
 		for (auto entity : view) {
-			auto& camera = view.get<CameraComponent>(entity);
-			if (!camera.FixedAspectRatio) {
-				camera
-			}
+			auto& cameraComponent = view.get<CameraComponent>(entity);
+			if (!cameraComponent.FixedAspectRatio)
+				cameraComponent.Camera.SetViewportSize(width, height);
 		}
 	}
 }

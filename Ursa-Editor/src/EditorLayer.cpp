@@ -46,10 +46,38 @@ namespace Ursa {
 		m_FrameBuffer = FrameBuffer::Create(fbspec);
 
 		m_ActiveScene = CreateRef<Scene>();
+
 		m_QuadEntity = m_ActiveScene->CreateEntity("Quad Entity");
 		m_QuadEntity.AddComponent<SpriteComponent>(glm::vec4{ 0.9f, 0.9f, 0.3f, 1.0f });
+
 		m_CameraEntity = m_ActiveScene->CreateEntity("Camera Entity");
-		m_CameraEntity.AddComponent<CameraComponent>(glm::ortho(-16.0f, 16.0f, -9.0f, 9.0f, -1.0f, 1.0f));
+		m_CameraEntity.AddComponent<CameraComponent>();
+		
+
+		class CameraController : public ScriptableEntity {
+		public:
+			void OnCreate() {
+
+			}
+
+			void OnDestroy() {
+
+			}
+
+			void OnUpdate(TimeStep ts) {
+				auto& transform = GetComponent<TransformComponent>().Transform;
+				float speed = 5.0f;
+				if (Input::IsKeyPressed(Key::W))
+					transform[3][1] += speed * ts;
+				if (Input::IsKeyPressed(Key::A))
+					transform[3][0] -= speed * ts;
+				if (Input::IsKeyPressed(Key::S))
+					transform[3][1] -= speed * ts;
+				if (Input::IsKeyPressed(Key::D))
+					transform[3][0] += speed * ts;
+			}
+		};
+		m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 	}
 
 	void EditorLayer::OnDetach()

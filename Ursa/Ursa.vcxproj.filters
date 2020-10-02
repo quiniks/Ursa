@@ -1412,6 +1412,7 @@
     <ClInclude Include="src\Ursa\Scene\Entity.h" />
     <ClInclude Include="src\Ursa\Renderer\Camera.h" />
     <ClInclude Include="src\Ursa\Scene\SceneCamera.h" />
+    <ClInclude Include="src\Ursa\Scene\ScriptableEntity.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
@@ -1506,5 +1507,6 @@
     </ClCompile>
     <ClCompile Include="src\Ursa\Scene\Scene.cpp" />
     <ClCompile Include="src\Ursa\Scene\Entity.cpp" />
+    <ClCompile Include="src\Ursa\Scene\SceneCamera.cpp" />
   </ItemGroup>
 </Project>
