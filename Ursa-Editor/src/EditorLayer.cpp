@@ -47,23 +47,15 @@ namespace Ursa {
 
 		m_ActiveScene = CreateRef<Scene>();
 
-		m_QuadEntity = m_ActiveScene->CreateEntity("Quad Entity");
+		m_QuadEntity = m_ActiveScene->CreateEntity("Quad");
 		m_QuadEntity.AddComponent<SpriteComponent>(glm::vec4{ 0.9f, 0.9f, 0.3f, 1.0f });
 
-		m_CameraEntity = m_ActiveScene->CreateEntity("Camera Entity");
+		m_CameraEntity = m_ActiveScene->CreateEntity("Camera");
 		m_CameraEntity.AddComponent<CameraComponent>();
 		
 
 		class CameraController : public ScriptableEntity {
 		public:
-			void OnCreate() {
-
-			}
-
-			void OnDestroy() {
-
-			}
-
 			void OnUpdate(TimeStep ts) {
 				auto& transform = GetComponent<TransformComponent>().Transform;
 				float speed = 5.0f;
@@ -78,6 +70,8 @@ namespace Ursa {
 			}
 		};
 		m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+		
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 	}
 
 	void EditorLayer::OnDetach()
@@ -157,7 +151,7 @@ namespace Ursa {
 		static bool dockspaceOpen = true;
 		static bool opt_fullscreen_persistant = true;
 		bool opt_fullscreen = opt_fullscreen_persistant;
-		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_AutoHideTabBar;
+		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
 		// We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
 		// because it would be confusing to have two docking targets within each others.
@@ -213,6 +207,8 @@ namespace Ursa {
 
 			ImGui::EndMenuBar();
 		}
+
+		m_SceneHierarchyPanel.OnImGuiRender();
 
 		ImGui::Begin("Stats");
 		auto stats = Renderer2D::GetStats();

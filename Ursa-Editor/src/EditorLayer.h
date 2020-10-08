@@ -2,6 +2,7 @@
 #include "Ursa.h"
 
 #include "imgui/imgui.h"
+#include "Panels/SceneHierarchyPanel.h"
 
 namespace Ursa {
 	class EditorLayer : public Layer {
@@ -32,5 +33,8 @@ namespace Ursa {
 		glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
 		bool m_ViewportFocused = false;
 		bool m_ViewportHovered = false;
+
+		//Panels
+		SceneHierarchyPanel m_SceneHierarchyPanel;
 	};
 }

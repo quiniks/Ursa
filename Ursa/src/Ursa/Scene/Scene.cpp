@@ -28,16 +28,15 @@ namespace Ursa {
 	void Scene::OnUpdate(TimeStep ts)
 	{
 		//Update scripts
-		m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto& nsc) {
-			if (!nsc.Instance) {
-				nsc.InstantiateFunction();
-				nsc.Instance->m_Entity = Entity{ entity, this };
 
-				if (nsc.OnCreateFunction)
-					nsc.OnCreateFunction(nsc.Instance);
+		m_Registry.view<NativeScriptComponent>().each([=](entt::entity entity, NativeScriptComponent& nsc) {
+			//todo move to scene::onsceneplay
+			if (!nsc.Instance) {
+				nsc.Instance = nsc.InstantiateScript();
+				nsc.Instance->m_Entity = Entity{ entity, this };
+				nsc.Instance->OnCreate();
 			}
-			if (nsc.OnUpdateFunction)
-			nsc.OnUpdateFunction(nsc.Instance, ts);
+			nsc.Instance->OnUpdate(ts);
 		});
 		////
 		//Render 2D
@@ -58,7 +57,7 @@ namespace Ursa {
 
 			auto group = m_Registry.group<TransformComponent>(entt::get<SpriteComponent>);
 			for (auto entity : group) {
-				auto& [transformComponent, spriteComponent] = group.get<TransformComponent, SpriteComponent>(entity);
+				auto [transformComponent, spriteComponent] = group.get<TransformComponent, SpriteComponent>(entity);
 				Renderer2D::DrawQuad(transformComponent, spriteComponent.Color);
 			}
 
