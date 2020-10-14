@@ -47,8 +47,15 @@ namespace Ursa {
 
 		m_ActiveScene = CreateRef<Scene>();
 
-		m_QuadEntity = m_ActiveScene->CreateEntity("Quad");
-		m_QuadEntity.AddComponent<SpriteComponent>(glm::vec4{ 0.9f, 0.9f, 0.3f, 1.0f });
+		auto yellowQuad = m_ActiveScene->CreateEntity("Yellow");
+		yellowQuad.AddComponent<SpriteComponent>(glm::vec4{ 0.9f, 0.9f, 0.6f, 1.0f });
+		yellowQuad.GetComponent<TransformComponent>().Transform[3][0] = -1.0f;
+
+		auto redQuad = m_ActiveScene->CreateEntity("Blue");
+		redQuad.AddComponent<SpriteComponent>(glm::vec4{ 0.4f, 0.8f, 0.8f, 1.0f });
+		redQuad.GetComponent<TransformComponent>().Transform[3][0] = 1.0f;
+
+		m_QuadEntity = yellowQuad;
 
 		m_CameraEntity = m_ActiveScene->CreateEntity("Camera");
 		m_CameraEntity.AddComponent<CameraComponent>();

@@ -75,6 +75,9 @@ namespace Ursa {
 			if (ImGui::TreeNodeEx((void*)typeid(CameraComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Camera")) {
 				auto& cameraComponent = entity.GetComponent<CameraComponent>();
 				auto& camera = cameraComponent.Camera;
+				
+				ImGui::Checkbox("Primary", &cameraComponent.Primary);
+				
 				const char* projectionTypeStrings[] = { "Perspective", "Orthographic" };
 				const char* currentProjectionTypeString = projectionTypeStrings[(int)camera.GetProjectionType()];
 				if (ImGui::BeginCombo("Projection", currentProjectionTypeString)) {
@@ -93,14 +96,42 @@ namespace Ursa {
 				}
 
 				if (camera.GetProjectionType() == SceneCamera::ProjectionType::Perspective) {
+					float PerspVerticalFOV = glm::degrees(camera.GetPerspectiveVerticalFOV());
+					if (ImGui::DragFloat("Vertical FOV", &PerspVerticalFOV))
+						camera.SetPerspectiveVerticalFOV(glm::radians(PerspVerticalFOV));
 
+					float PerspNear = camera.GetPerspectiveNearClip();
+					if (ImGui::DragFloat("Near", &PerspNear))
+						camera.SetPerspectiveNearClip(PerspNear);
+
+					float PerspFar = camera.GetPerspectiveFarClip();
+					if (ImGui::DragFloat("Far", &PerspFar))
+						camera.SetPerspectiveFarClip(PerspFar);
 				}
 
 				if (camera.GetProjectionType() == SceneCamera::ProjectionType::Orthographic) {
-					//ImGui::DragFloat("Size", camera.GetOrthographicSize());
-					//camera.GetOrthographicNearClip();
-					//camera.GetOrthographicFarClip();
+					float orthoSize = camera.GetOrthographicSize();
+					if (ImGui::DragFloat("Size", &orthoSize))
+						camera.SetOrthographicSize(orthoSize);
+
+					float orthoNear = camera.GetOrthographicNearClip();
+					if (ImGui::DragFloat("Near", &orthoNear))
+						camera.SetOrthographicNearClip(orthoNear);
+
+					float orthoFar = camera.GetOrthographicFarClip();
+					if (ImGui::DragFloat("Far", &orthoFar))
+						camera.SetOrthographicFarClip(orthoFar);
+
+					ImGui::Checkbox("Fixed Aspect Ratio", &cameraComponent.FixedAspectRatio);
 				}
+				ImGui::TreePop();
+			}
+		}
+	
+		if (entity.HasComponent<SpriteComponent>()) {
+			if (ImGui::TreeNodeEx((void*)typeid(SpriteComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Sprite")) {
+				auto& color = entity.GetComponent<SpriteComponent>().Color;
+				ImGui::ColorEdit4("Color", glm::value_ptr(color));
 				ImGui::TreePop();
 			}
 		}
