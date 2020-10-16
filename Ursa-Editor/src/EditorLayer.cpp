@@ -5,22 +5,10 @@
 
 namespace Ursa {
 
-	static const uint32_t s_MapWidth = 9;
-	static const char* s_MapTiles =
-		"GGGGWGGGG"
-		"GTGGWGGGG"
-		"GGGGWGGTG"
-		"GGGGWGGGG"
-		"GGGGBGGGG"
-		"GGGGWGGGG"
-		"GGTGWGGGG"
-		"GGGGWGGTG"
-		"GGGGWGGGG";
-
 	EditorLayer::EditorLayer()
 		:Layer("EditorLayer"), m_CameraController(1280.0f / 720.0f, true)
 	{
-
+		
 	}
 
 	void EditorLayer::OnAttach()
@@ -30,13 +18,56 @@ namespace Ursa {
 		m_TileSheet = Texture2D::Create("assets/textures/colored_transparent_packed.png");
 		m_UrsaTitle = Texture2D::Create("assets/textures/Ursa.png");
 
-		m_MapWidth = s_MapWidth;
-		m_MapHeight = strlen(s_MapTiles) / s_MapWidth;
-		m_TextureMap['G'] = SubTexture2D::CreateFromCoords(m_TileSheet, { 5, 21 }, { 16, 16 });
-		m_TextureMap['W'] = SubTexture2D::CreateFromCoords(m_TileSheet, { 8, 17 }, { 16, 16 });
-		m_TextureMap['B'] = SubTexture2D::CreateFromCoords(m_TileSheet, { 6, 17 }, { 16, 16 });
-		m_TextureMap['T'] = SubTexture2D::CreateFromCoords(m_TileSheet, { 19, 16 }, { 16, 16 });
-		m_TextureMap['?'] = SubTexture2D::CreateFromCoords(m_TileSheet, { 37, 8 }, { 16, 16 });
+		ImGuiIO& io = ImGui::GetIO();
+		io.Fonts->AddFontFromFileTTF("assets/fonts/Noto_Sans/NotoSans-Regular.ttf", 16.0f);
+		ImGuiStyle& style = ImGui::GetStyle();
+		style.FrameRounding = 3.0f;
+		//style.
+		ImVec4* colors = style.Colors;
+		//Colors
+		{
+			colors[ImGuiCol_Text] = ImVec4(0.98f, 0.98f, 0.98f, 1.00f);
+			colors[ImGuiCol_TextDisabled] = ImVec4(0.59f, 0.58f, 0.58f, 1.00f);
+			colors[ImGuiCol_WindowBg] = ImVec4(0.24f, 0.28f, 0.32f, 1.00f);
+			colors[ImGuiCol_ChildBg] = ImVec4(0.04f, 0.04f, 0.04f, 0.00f);
+			colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
+			colors[ImGuiCol_Border] = ImVec4(0.07f, 0.08f, 0.09f, 0.50f);
+			colors[ImGuiCol_BorderShadow] = ImVec4(0.04f, 0.04f, 0.04f, 0.00f);
+			colors[ImGuiCol_FrameBg] = ImVec4(0.15f, 0.18f, 0.20f, 0.54f);
+			colors[ImGuiCol_FrameBgHovered] = ImVec4(0.15f, 0.18f, 0.20f, 0.40f);
+			colors[ImGuiCol_FrameBgActive] = ImVec4(0.44f, 0.53f, 0.56f, 0.67f);
+			colors[ImGuiCol_TitleBg] = ImVec4(0.07f, 0.08f, 0.09f, 1.00f);
+			colors[ImGuiCol_TitleBgActive] = ImVec4(0.15f, 0.18f, 0.20f, 1.00f);
+			colors[ImGuiCol_MenuBarBg] = ImVec4(0.07f, 0.08f, 0.09f, 1.00f);
+			colors[ImGuiCol_ScrollbarBg] = ImVec4(0.07f, 0.08f, 0.09f, 0.53f);
+			colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.24f, 0.28f, 0.32f, 1.00f);
+			colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.24f, 0.28f, 0.32f, 1.00f);
+			colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.44f, 0.53f, 0.56f, 1.00f);
+			colors[ImGuiCol_CheckMark] = ImVec4(0.44f, 0.53f, 0.56f, 1.00f);
+			colors[ImGuiCol_SliderGrab] = ImVec4(0.44f, 0.53f, 0.56f, 1.00f);
+			colors[ImGuiCol_SliderGrabActive] = ImVec4(0.54f, 0.69f, 0.68f, 1.00f);
+			colors[ImGuiCol_Button] = ImVec4(0.54f, 0.69f, 0.68f, 0.40f);
+			colors[ImGuiCol_ButtonHovered] = ImVec4(0.44f, 0.53f, 0.56f, 1.00f);
+			colors[ImGuiCol_ButtonActive] = ImVec4(0.24f, 0.28f, 0.32f, 1.00f);
+			colors[ImGuiCol_Header] = ImVec4(0.07f, 0.08f, 0.09f, 0.70f);
+			colors[ImGuiCol_HeaderHovered] = ImVec4(0.15f, 0.18f, 0.20f, 0.80f);
+			colors[ImGuiCol_HeaderActive] = ImVec4(0.24f, 0.28f, 0.32f, 1.00f);
+			colors[ImGuiCol_Separator] = ImVec4(0.07f, 0.08f, 0.09f, 0.66f);
+			colors[ImGuiCol_SeparatorHovered] = ImVec4(0.15f, 0.18f, 0.20f, 0.78f);
+			colors[ImGuiCol_SeparatorActive] = ImVec4(0.07f, 0.08f, 0.09f, 1.00f);
+			colors[ImGuiCol_ResizeGrip] = ImVec4(0.07f, 0.08f, 0.09f, 0.25f);
+			colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.44f, 0.53f, 0.56f, 0.67f);
+			colors[ImGuiCol_ResizeGripActive] = ImVec4(0.15f, 0.18f, 0.20f, 0.95f);
+			colors[ImGuiCol_Tab] = ImVec4(0.24f, 0.28f, 0.32f, 0.86f);
+			colors[ImGuiCol_TabHovered] = ImVec4(1.00f, 0.84f, 0.73f, 0.80f);
+			colors[ImGuiCol_TabActive] = ImVec4(0.07f, 0.08f, 0.09f, 1.00f);
+			colors[ImGuiCol_TabUnfocused] = ImVec4(0.15f, 0.18f, 0.20f, 0.97f);
+			colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.24f, 0.28f, 0.32f, 1.00f);
+			colors[ImGuiCol_DockingPreview] = ImVec4(1.00f, 0.84f, 0.73f, 0.70f);
+			colors[ImGuiCol_TextSelectedBg] = ImVec4(1.00f, 0.58f, 0.28f, 0.35f);
+			colors[ImGuiCol_NavHighlight] = ImVec4(0.54f, 0.69f, 0.68f, 1.00f);
+		}
+
 
 		m_CameraController.SetZoomLevel(5.0f);
 
@@ -111,44 +142,6 @@ namespace Ursa {
 		RenderCommand::Clear();
 		m_ActiveScene->OnUpdate(ts);
 		m_FrameBuffer->Unbind();
-
-		/*
-			//static float rotation = 0.0f;
-			//rotation += ts * 20.0f;
-			//URSA_PROFILE_SCOPE("Renderer Draw");
-			//Renderer2D::BeginScene(m_CameraController.GetCamera());
-			//Renderer2D::DrawQuad({ 0.0f, 0.0f, -0.1f }, { 20.0f, 20.0f }, 0.0f, m_CheckerTexture, { 10.0f, 10.0f }, { 0.1f, 0.1f, 0.1f, 1.0f });
-			//Update scene
-			//m_ActiveScene->OnUpdate(ts);
-
-			//Renderer2D::DrawQuad({ -0.5f, 0.0f }, { 0.7f, 0.7f }, glm::radians(rotation), { 0.8f, 0.2f, 0.3f, 1.0f });
-			//Renderer2D::DrawQuad({ 0.5f, 0.0f }, { 0.5f, 0.7f }, 0.0f, { 0.4f, 0.8f, 0.8f, 1.0f });
-			/*
-			for (float y = -5.0f; y < 5.0f; y += 0.5f) {
-				for (float x = -5.0f; x < 5.0f; x += 0.5f) {
-					glm::vec4 color = { (x + 5.0f) / 10.0f, 0.0f, (y + 5.0f) / 10.0f, 0.5f };
-					Renderer2D::DrawQuad({ x, y }, { 0.45f, 0.45f }, 0.0f, color);
-				}
-			}
-			
-			
-			for (uint32_t y = 0; y < m_MapHeight; y++) {
-				for (uint32_t x = 0; x < m_MapWidth; x++) {
-					char tileType = s_MapTiles[x + y * m_MapWidth];
-					Ref<SubTexture2D> texture;
-					if (m_TextureMap.find(tileType) != m_TextureMap.end())
-						texture = m_TextureMap[tileType];
-					else
-						texture = m_TextureMap['?'];
-					Renderer2D::DrawQuad({ x + 0.5f - m_MapWidth / 2.0f, m_MapHeight - y - 0.5f - m_MapHeight / 2.0f, 0.5f }, { 1.0f, 1.0f }, 0.0f, texture);
-				}
-			}
-
-
-			//Renderer2D::DrawQuad({ 0.0f, 0.0f, 0.2f }, { 3.8f, 2.0f }, 0.0f, m_UrsaTitle);
-			//Renderer2D::EndScene();
-		//m_FrameBuffer->Unbind();
-		*/
 	}
 
 	void EditorLayer::OnImGuiRender()
@@ -186,7 +179,7 @@ namespace Ursa {
 		// We cannot preserve the docking relationship between an active window and an inactive docking, otherwise
 		// any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		ImGui::Begin("DockSpace Demo", &dockspaceOpen, window_flags);
+		ImGui::Begin("DockSpace", &dockspaceOpen, window_flags);
 		ImGui::PopStyleVar();
 
 		if (opt_fullscreen)
@@ -217,14 +210,17 @@ namespace Ursa {
 
 		m_SceneHierarchyPanel.OnImGuiRender();
 
-		ImGui::Begin("Stats");
-		auto stats = Renderer2D::GetStats();
-		ImGui::Text("Renderer2D stats");
-		ImGui::Text("Draw calls: %d", stats.DrawCalls);
-		ImGui::Text("Quads: %d", stats.QuadCount);
-		ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
-		ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
-		ImGui::End();
+		static bool statsOpen = true;
+		if (statsOpen) {
+			ImGui::Begin("Stats", &statsOpen, ImGuiWindowFlags_NoCollapse);
+			auto stats = Renderer2D::GetStats();
+			ImGui::Text("Renderer2D stats");
+			ImGui::Text("Draw calls: %d", stats.DrawCalls);
+			ImGui::Text("Quads: %d", stats.QuadCount);
+			ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
+			ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+			ImGui::End();
+		}
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
 		ImGui::Begin("Viewport");
@@ -242,6 +238,8 @@ namespace Ursa {
 		ImGui::PopStyleVar();
 
 		ImGui::End();
+
+		//ImGui::ShowDemoWindow();
 	}
 
 	void EditorLayer::OnEvent(Event& e)
