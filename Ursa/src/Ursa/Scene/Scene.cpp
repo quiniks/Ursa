@@ -25,6 +25,11 @@ namespace Ursa {
 		return entity;
 	}
 
+	void Scene::DestroyEntity(Entity entity)
+	{
+		m_Registry.destroy(entity);
+	}
+
 	void Scene::OnUpdate(TimeStep ts)
 	{
 		//Update scripts
@@ -41,24 +46,24 @@ namespace Ursa {
 		////
 		//Render 2D
 		Camera* primaryCamera = nullptr;
-		glm::mat4* primaryTransform = nullptr;
+		glm::mat4 primaryTransform;
 		auto view = m_Registry.view<TransformComponent, CameraComponent>();
 		for (auto entity : view) {
 			auto [transformComponent, cameraComponent] = view.get<TransformComponent, CameraComponent>(entity);
 			if (cameraComponent.Primary) {
 				primaryCamera = &cameraComponent.Camera;
-				primaryTransform = &transformComponent.Transform;
+				primaryTransform = transformComponent.GetTransform();
 				break;
 			}
 		}
 
 		if (primaryCamera) {
-			Renderer2D::BeginScene(primaryCamera->GetProjection(), *primaryTransform);
+			Renderer2D::BeginScene(primaryCamera->GetProjection(), primaryTransform);
 
 			auto group = m_Registry.group<TransformComponent>(entt::get<SpriteComponent>);
 			for (auto entity : group) {
 				auto [transformComponent, spriteComponent] = group.get<TransformComponent, SpriteComponent>(entity);
-				Renderer2D::DrawQuad(transformComponent, spriteComponent.Color);
+				Renderer2D::DrawQuad(transformComponent.GetTransform(), spriteComponent.Color);
 			}
 
 			Renderer2D::EndScene();

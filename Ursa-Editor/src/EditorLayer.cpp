@@ -51,8 +51,8 @@ namespace Ursa {
 			colors[ImGuiCol_ButtonActive] = ImVec4(0.24f, 0.28f, 0.32f, 1.00f);
 			colors[ImGuiCol_Header] = ImVec4(0.07f, 0.08f, 0.09f, 0.70f);
 			colors[ImGuiCol_HeaderHovered] = ImVec4(0.15f, 0.18f, 0.20f, 0.80f);
-			colors[ImGuiCol_HeaderActive] = ImVec4(0.24f, 0.28f, 0.32f, 1.00f);
-			colors[ImGuiCol_Separator] = ImVec4(0.07f, 0.08f, 0.09f, 0.66f);
+			colors[ImGuiCol_HeaderActive] = ImVec4(0.07f, 0.08f, 0.09f, 0.70f);
+			colors[ImGuiCol_Separator] = ImVec4(0.15f, 0.18f, 0.20f, 0.66f);
 			colors[ImGuiCol_SeparatorHovered] = ImVec4(0.15f, 0.18f, 0.20f, 0.78f);
 			colors[ImGuiCol_SeparatorActive] = ImVec4(0.07f, 0.08f, 0.09f, 1.00f);
 			colors[ImGuiCol_ResizeGrip] = ImVec4(0.07f, 0.08f, 0.09f, 0.25f);
@@ -80,11 +80,11 @@ namespace Ursa {
 
 		auto yellowQuad = m_ActiveScene->CreateEntity("Yellow");
 		yellowQuad.AddComponent<SpriteComponent>(glm::vec4{ 0.9f, 0.9f, 0.6f, 1.0f });
-		yellowQuad.GetComponent<TransformComponent>().Transform[3][0] = -1.0f;
+		yellowQuad.GetComponent<TransformComponent>().Translation.x = -1.0f;
 
 		auto redQuad = m_ActiveScene->CreateEntity("Blue");
 		redQuad.AddComponent<SpriteComponent>(glm::vec4{ 0.4f, 0.8f, 0.8f, 1.0f });
-		redQuad.GetComponent<TransformComponent>().Transform[3][0] = 1.0f;
+		redQuad.GetComponent<TransformComponent>().Translation.x = 1.0f;
 
 		m_QuadEntity = yellowQuad;
 
@@ -95,16 +95,16 @@ namespace Ursa {
 		class CameraController : public ScriptableEntity {
 		public:
 			void OnUpdate(TimeStep ts) {
-				auto& transform = GetComponent<TransformComponent>().Transform;
+				auto& translation = GetComponent<TransformComponent>().Translation;
 				float speed = 5.0f;
 				if (Input::IsKeyPressed(Key::W))
-					transform[3][1] += speed * ts;
+					translation.y += speed * ts;
 				if (Input::IsKeyPressed(Key::A))
-					transform[3][0] -= speed * ts;
+					translation.x -= speed * ts;
 				if (Input::IsKeyPressed(Key::S))
-					transform[3][1] -= speed * ts;
+					translation.y -= speed * ts;
 				if (Input::IsKeyPressed(Key::D))
-					transform[3][0] += speed * ts;
+					translation.x += speed * ts;
 			}
 		};
 		m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
