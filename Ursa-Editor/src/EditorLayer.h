@@ -35,6 +35,8 @@ namespace Ursa {
 		bool m_ViewportHovered = false;
 
 		//Panels
+		bool m_StatsOpen = false;
+		bool m_DemoOpen = false;
 		SceneHierarchyPanel m_SceneHierarchyPanel;
 	};
 }

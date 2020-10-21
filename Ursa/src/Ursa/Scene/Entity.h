@@ -13,7 +13,9 @@ namespace Ursa {
 		template<typename T, typename... Args>
 		T& AddComponent(Args&&... args) {
 			URSA_CORE_ASSERT(!HasComponent<T>(), "Entity already has component");
-			return m_Scene->m_Registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
+			T& component = m_Scene->m_Registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
+			m_Scene->OnComponentAdded<T>(*this, component);
+			return component;
 		}
 
 		template<typename T>
@@ -30,7 +32,7 @@ namespace Ursa {
 		template<typename T>
 		void RemoveComponent() {
 			URSA_CORE_ASSERT(HasComponent<T>(), "Entity does not have component");
-			m_Scene->m_Registry.remove<T>(m_EntityHandle)
+			m_Scene->m_Registry.remove<T>(m_EntityHandle);
 		}
 
 		operator bool() const {
