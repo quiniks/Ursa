@@ -18,11 +18,13 @@ IncludeDir["ImGui"] = "Ursa/vendor/imgui"
 IncludeDir["glm"] = "Ursa/vendor/glm"
 IncludeDir["stb_image"] = "Ursa/vendor/stb_image"
 IncludeDir["entt"] = "Ursa/vendor/entt/include"
+IncludeDir["yaml"] = "Ursa/vendor/yaml/include"
 
 group "Dependencies"
 	include "Ursa/vendor/GLFW"
 	include "Ursa/vendor/Glad"
 	include "Ursa/vendor/ImGui"
+	include "Ursa/vendor/yaml"
 group ""
 
 project "Ursa"
@@ -55,13 +57,15 @@ project "Ursa"
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.yaml}"
 	}
 
 	links {
 		"GLFW",
 		"Glad",
 		"opengl32.lib",
+		"yaml-cpp",
 		"ImGui"
 	}
 
