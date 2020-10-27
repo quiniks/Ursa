@@ -4,6 +4,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Ursa/Scene/SceneSerializer.h"
+#include "Ursa/Utils/PlatformUtils.h"
 
 namespace Ursa {
 
@@ -93,16 +94,6 @@ namespace Ursa {
 		m_ActiveScene = CreateRef<Scene>();
 
 #if 0
-		auto yellowQuad = m_ActiveScene->CreateEntity("Yellow");
-		yellowQuad.AddComponent<SpriteComponent>(glm::vec4{ 0.9f, 0.9f, 0.6f, 1.0f });
-		yellowQuad.GetComponent<TransformComponent>().Translation.x = -1.0f;
-
-		auto redQuad = m_ActiveScene->CreateEntity("Blue");
-		redQuad.AddComponent<SpriteComponent>(glm::vec4{ 0.4f, 0.8f, 0.8f, 1.0f });
-		redQuad.GetComponent<TransformComponent>().Translation.x = 1.0f;
-
-		m_QuadEntity = yellowQuad;
-
 		m_CameraEntity = m_ActiveScene->CreateEntity("Camera");
 		m_CameraEntity.AddComponent<CameraComponent>();
 		
@@ -216,14 +207,30 @@ namespace Ursa {
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("Serialize")) {
-					SceneSerializer serializer(m_ActiveScene);
-					serializer.Serialize("assets/scenes/Example.ursa");
+				if (ImGui::MenuItem("New")) {
+					m_ActiveScene = CreateRef<Scene>();
+					m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+					m_SceneHierarchyPanel.SetContext(m_ActiveScene);
 				}
-				if (ImGui::MenuItem("Deserialize")) {
-					SceneSerializer serializer(m_ActiveScene);
-					serializer.Deserialize("assets/scenes/Example.ursa");
+				if (ImGui::MenuItem("Open...")) {
+					std::string filePath = FileDialogs::OpenFile("Ursa Scene (*.ursa)\0*.ursa\0");
+					if (!filePath.empty()) {
+						m_ActiveScene = CreateRef<Scene>();
+						m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+						m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+
+						SceneSerializer serializer(m_ActiveScene);
+						serializer.Deserialize(filePath);
+					}
 				}
+				if (ImGui::MenuItem("Save As...")) {
+					std::string filePath = FileDialogs::SaveFile("Ursa Scene (*.ursa)\0*.ursa\0");
+					if (!filePath.empty()) {
+						SceneSerializer serializer(m_ActiveScene);
+						serializer.Serialize(filePath);
+					}
+				}
+				ImGui::Separator();
 				if (ImGui::MenuItem("Exit"))
 					Application::Get().Close();
 				ImGui::EndMenu();
