@@ -85,6 +85,19 @@ namespace Ursa {
 		}
 	}
 
+	bool Scene::GetPrimaryCameraEntity(Entity& camera)
+	{
+		auto view = m_Registry.view<CameraComponent>();
+		for (auto entity : view) {
+			auto cameraComponent = view.get<CameraComponent>(entity);
+			if (cameraComponent.Primary) {
+				camera = Entity{ entity, this };
+				return true;
+			}
+		}
+		return false;
+	}
+
 	template<typename T>
 	void Scene::OnComponentAdded(Entity entity, T& component) {
 		static_assert(false);

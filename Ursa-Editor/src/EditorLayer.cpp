@@ -2,9 +2,11 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 
 #include "Ursa/Scene/SceneSerializer.h"
 #include "Ursa/Utils/PlatformUtils.h"
+#include "imguizmo/ImGuizmo.h"
 
 namespace Ursa {
 
@@ -236,6 +238,18 @@ namespace Ursa {
 				ImGui::EndMenu();
 			}
 
+			if (ImGui::BeginMenu("Edit")) {
+				if (ImGui::MenuItem("Translate"))
+					m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+				if (ImGui::MenuItem("Rotate"))
+					m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+				if (ImGui::MenuItem("Scale"))
+					m_GizmoType = ImGuizmo::OPERATION::SCALE;
+				if (ImGui::MenuItem("None"))
+					m_GizmoType = -1;
+				ImGui::EndMenu();
+			}
+
 			if (ImGui::BeginMenu("View"))
 			{
 				if (ImGui::MenuItem("ImGui Demo"))
@@ -244,6 +258,8 @@ namespace Ursa {
 					m_StatsOpen = true;
 				ImGui::EndMenu();
 			}
+
+			
 
 			ImGui::EndMenuBar();
 		}
@@ -274,6 +290,45 @@ namespace Ursa {
 
 		uint32_t textureID = m_FrameBuffer->GetColorAttachmentRendererID();
 		ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+		
+		//Gizmos
+		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+		if (m_GizmoType != -1 && selectedEntity) {
+			float rw = (float)ImGui::GetWindowWidth();
+			float rh = (float)ImGui::GetWindowHeight();
+			ImGuizmo::SetOrthographic(false);
+			ImGuizmo::SetDrawlist();
+			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, rw, rh);
+			bool snap = Input::IsKeyPressed(Key::LeftControl);
+
+			TransformComponent& selectedEntityTransformComponent = selectedEntity.GetComponent<TransformComponent>();
+			glm::mat4 selectedEntityTransform = selectedEntityTransformComponent.GetTransform();
+			Entity cameraEntity;
+			if (m_ActiveScene->GetPrimaryCameraEntity(cameraEntity)) {
+				const auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
+				glm::mat4 cameraTransform = cameraEntity.GetComponent<TransformComponent>().GetTransform();
+				glm::mat4 cameraView = glm::inverse(cameraTransform);
+				float snapValue = 0.5f;
+				float snapValues[3] = { snapValue, snapValue, snapValue };
+				glm::mat4 delta;
+				ImGuizmo::Manipulate(
+					glm::value_ptr(cameraView),
+					glm::value_ptr(camera.GetProjection()),
+					(ImGuizmo::OPERATION)m_GizmoType,
+					ImGuizmo::LOCAL,
+					glm::value_ptr(selectedEntityTransform),
+					glm::value_ptr(delta),
+					snap ? snapValues : nullptr
+				);
+				glm::vec3 deltaR;
+				glm::vec3 empty;
+				ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(selectedEntityTransform), glm::value_ptr(selectedEntityTransformComponent.Translation), glm::value_ptr(empty), glm::value_ptr(selectedEntityTransformComponent.Scale));
+				ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(delta), glm::value_ptr(empty), glm::value_ptr(deltaR), glm::value_ptr(empty));
+				//URSA_CORE_WARN("Rotation: {0}, {1}, {2}", deltaR.x, deltaR.y, deltaR.z);
+				//selectedEntityTransformComponent.Rotation += glm::radians(deltaR);
+			}
+		}
+
 		ImGui::End();
 		ImGui::PopStyleVar();
 

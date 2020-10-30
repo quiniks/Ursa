@@ -38,5 +38,8 @@ namespace Ursa {
 		bool m_StatsOpen = false;
 		bool m_DemoOpen = false;
 		SceneHierarchyPanel m_SceneHierarchyPanel;
+
+		//Gizmos
+		int m_GizmoType = -1;
 	};
 }

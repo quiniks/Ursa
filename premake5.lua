@@ -19,6 +19,7 @@ IncludeDir["glm"] = "Ursa/vendor/glm"
 IncludeDir["stb_image"] = "Ursa/vendor/stb_image"
 IncludeDir["entt"] = "Ursa/vendor/entt/include"
 IncludeDir["yaml"] = "Ursa/vendor/yaml/include"
+IncludeDir["imguizmo"] = "Ursa/vendor/imguizmo"
 
 group "Dependencies"
 	include "Ursa/vendor/GLFW"
@@ -46,7 +47,9 @@ project "Ursa"
 		"%{prj.name}/vendor/stb_image/**.h",
 		"%{prj.name}/vendor/stb_image/**.cpp",
 		"%{prj.name}/vendor/glm//**.hpp",
-		"%{prj.name}/vendor/glm//**.inl"
+		"%{prj.name}/vendor/glm//**.inl",
+		"%{prj.name}/vendor/imguizmo/ImGuizmo.h",
+		"%{prj.name}/vendor/imguizmo/ImGuizmo.cpp",
 	}
 
 	includedirs {
@@ -58,7 +61,8 @@ project "Ursa"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.entt}",
-		"%{IncludeDir.yaml}"
+		"%{IncludeDir.yaml}",
+		"%{IncludeDir.imguizmo}"
 	}
 
 	links {
@@ -68,6 +72,9 @@ project "Ursa"
 		"yaml-cpp",
 		"ImGui"
 	}
+
+	filter "files:Ursa/vendor/imguizmo/**.cpp"
+	flags { "NoPCH" }
 
 	filter "system:windows"
 		systemversion "latest"

@@ -14,3 +14,6 @@
 	path = Ursa/vendor/yaml
 	url = https://github.com/TheCherno/yaml-cpp.git
 	ignore = dirty
+[submodule "Ursa/vendor/imguizmo"]
+	path = Ursa/vendor/imguizmo
+	url = https://github.com/TheCherno/ImGuizmo.git
