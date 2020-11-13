@@ -2,11 +2,11 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/matrix_decompose.hpp>
 
 #include "Ursa/Scene/SceneSerializer.h"
 #include "Ursa/Utils/PlatformUtils.h"
 #include "imguizmo/ImGuizmo.h"
+#include "Ursa/Math/Math.h"
 
 namespace Ursa {
 
@@ -209,29 +209,12 @@ namespace Ursa {
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("New")) {
-					m_ActiveScene = CreateRef<Scene>();
-					m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-					m_SceneHierarchyPanel.SetContext(m_ActiveScene);
-				}
-				if (ImGui::MenuItem("Open...")) {
-					std::string filePath = FileDialogs::OpenFile("Ursa Scene (*.ursa)\0*.ursa\0");
-					if (!filePath.empty()) {
-						m_ActiveScene = CreateRef<Scene>();
-						m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-						m_SceneHierarchyPanel.SetContext(m_ActiveScene);
-
-						SceneSerializer serializer(m_ActiveScene);
-						serializer.Deserialize(filePath);
-					}
-				}
-				if (ImGui::MenuItem("Save As...")) {
-					std::string filePath = FileDialogs::SaveFile("Ursa Scene (*.ursa)\0*.ursa\0");
-					if (!filePath.empty()) {
-						SceneSerializer serializer(m_ActiveScene);
-						serializer.Serialize(filePath);
-					}
-				}
+				if (ImGui::MenuItem("New", "Ctrl+N"))
+					NewScene();
+				if (ImGui::MenuItem("Open...", "Ctrl+O"))
+					OpenScene();
+				if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
+					SaveSceneAs();
 				ImGui::Separator();
 				if (ImGui::MenuItem("Exit"))
 					Application::Get().Close();
@@ -258,9 +241,6 @@ namespace Ursa {
 					m_StatsOpen = true;
 				ImGui::EndMenu();
 			}
-
-			
-
 			ImGui::EndMenuBar();
 		}
 
@@ -283,7 +263,7 @@ namespace Ursa {
 
 		m_ViewportFocused = ImGui::IsWindowFocused();
 		m_ViewportHovered = ImGui::IsWindowHovered();
-		Application::Get().GetImGuiLayer()->SetBlockEvents(!m_ViewportFocused || !m_ViewportHovered);
+		Application::Get().GetImGuiLayer()->SetBlockEvents(!m_ViewportFocused && !m_ViewportHovered);
 
 		ImVec2 viewportSize = ImGui::GetContentRegionAvail();
 		m_ViewportSize = { viewportSize.x, viewportSize.y };
@@ -299,33 +279,43 @@ namespace Ursa {
 			ImGuizmo::SetOrthographic(false);
 			ImGuizmo::SetDrawlist();
 			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, rw, rh);
-			bool snap = Input::IsKeyPressed(Key::LeftControl);
 
+			//Camera
+			Entity cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
+			const auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
+			glm::mat4 cameraTransform = cameraEntity.GetComponent<TransformComponent>().GetTransform();
+			glm::mat4 cameraView = glm::inverse(cameraTransform);
+
+			//Selected Entity
 			TransformComponent& selectedEntityTransformComponent = selectedEntity.GetComponent<TransformComponent>();
 			glm::mat4 selectedEntityTransform = selectedEntityTransformComponent.GetTransform();
-			Entity cameraEntity;
-			if (m_ActiveScene->GetPrimaryCameraEntity(cameraEntity)) {
-				const auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
-				glm::mat4 cameraTransform = cameraEntity.GetComponent<TransformComponent>().GetTransform();
-				glm::mat4 cameraView = glm::inverse(cameraTransform);
-				float snapValue = 0.5f;
-				float snapValues[3] = { snapValue, snapValue, snapValue };
-				glm::mat4 delta;
-				ImGuizmo::Manipulate(
-					glm::value_ptr(cameraView),
-					glm::value_ptr(camera.GetProjection()),
-					(ImGuizmo::OPERATION)m_GizmoType,
-					ImGuizmo::LOCAL,
-					glm::value_ptr(selectedEntityTransform),
-					glm::value_ptr(delta),
-					snap ? snapValues : nullptr
-				);
-				glm::vec3 deltaR;
-				glm::vec3 empty;
-				ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(selectedEntityTransform), glm::value_ptr(selectedEntityTransformComponent.Translation), glm::value_ptr(empty), glm::value_ptr(selectedEntityTransformComponent.Scale));
-				ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(delta), glm::value_ptr(empty), glm::value_ptr(deltaR), glm::value_ptr(empty));
-				//URSA_CORE_WARN("Rotation: {0}, {1}, {2}", deltaR.x, deltaR.y, deltaR.z);
-				//selectedEntityTransformComponent.Rotation += glm::radians(deltaR);
+
+			bool snapKey = Input::IsKeyPressed(Key::LeftControl);
+			float snapValue = 0.5f;
+			if (m_GizmoType == ImGuizmo::OPERATION::ROTATE)
+				snapValue = 45.0f;
+			float snapValues[3] = { snapValue, snapValue, snapValue };
+
+			//ImGuizmo::DrawGrid(glm::value_ptr(cameraView), glm::value_ptr(camera.GetProjection()), glm::value_ptr(glm::mat4(1.0f)), 10.f);
+			
+			ImGuizmo::Manipulate(
+				glm::value_ptr(cameraView),
+				glm::value_ptr(camera.GetProjection()),
+				(ImGuizmo::OPERATION)m_GizmoType,
+				ImGuizmo::LOCAL,
+				glm::value_ptr(selectedEntityTransform),
+				nullptr,
+				snapKey ? snapValues : nullptr
+			);
+
+			if (ImGuizmo::IsUsing()) {
+				glm::vec3 trans, scale, rot;
+				Math::DecomposeTransform(selectedEntityTransform, trans, rot, scale);
+				glm::vec3 deltaR = rot - selectedEntityTransformComponent.Rotation;
+
+				selectedEntityTransformComponent.Translation = trans;
+				selectedEntityTransformComponent.Rotation += deltaR;
+				selectedEntityTransformComponent.Scale = scale;
 			}
 		}
 
@@ -341,5 +331,83 @@ namespace Ursa {
 	void EditorLayer::OnEvent(Event& e)
 	{
 		m_CameraController.OnEvent(e);
+
+		EventDispatcher dispatcher(e);
+		dispatcher.Dispatch<KeyPressedEvent>(URSA_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
+	}
+
+	bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
+	{
+		// Shortcuts
+		if (e.GetRepeatCount() > 0)
+			return false;
+
+		bool CTRL = Input::IsKeyPressed(Key::LeftControl) || Input::IsKeyPressed(Key::RightControl);
+		bool SHIFT = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
+		switch (e.GetKeyCode())
+		{
+		case Key::N:
+		{
+			if (CTRL)
+				NewScene();
+
+			break;
+		}
+		case Key::O:
+		{
+			if (CTRL)
+				OpenScene();
+
+			break;
+		}
+		case Key::S:
+		{
+			if (CTRL && SHIFT)
+				SaveSceneAs();
+
+			break;
+		}
+		case Key::Q:
+			m_GizmoType = -1;
+			break;
+		case Key::W:
+			m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+			break;
+		case Key::E:
+			m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+			break;
+		case Key::R:
+			m_GizmoType = ImGuizmo::OPERATION::SCALE;
+			break;
+		}
+	}
+
+	void EditorLayer::NewScene()
+	{
+		m_ActiveScene = CreateRef<Scene>();
+		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+	}
+
+	void EditorLayer::OpenScene()
+	{
+		std::string filePath = FileDialogs::OpenFile("Ursa Scene (*.ursa)\0*.ursa\0");
+		if (!filePath.empty()) {
+			m_ActiveScene = CreateRef<Scene>();
+			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+
+			SceneSerializer serializer(m_ActiveScene);
+			serializer.Deserialize(filePath);
+		}
+	}
+
+	void EditorLayer::SaveSceneAs()
+	{
+		std::string filePath = FileDialogs::SaveFile("Ursa Scene (*.ursa)\0*.ursa\0");
+		if (!filePath.empty()) {
+			SceneSerializer serializer(m_ActiveScene);
+			serializer.Serialize(filePath);
+		}
 	}
 }

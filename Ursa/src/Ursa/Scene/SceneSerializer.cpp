@@ -6,6 +6,10 @@
 #include <yaml-cpp/yaml.h>
 #include <fstream>
 
+//TEMP
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 namespace YAML {
 	template<>
 	struct convert<glm::vec3> {

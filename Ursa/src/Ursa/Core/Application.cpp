@@ -16,6 +16,7 @@ namespace Ursa {
 		s_Instance = this;
 
 		m_Window = Window::Create(WindowProperties(name));
+		m_Window->SetIcon("assets/textures/Ursa Icon.png");
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 
 		Renderer::Init();

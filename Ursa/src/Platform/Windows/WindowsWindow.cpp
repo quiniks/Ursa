@@ -5,6 +5,7 @@
 #include "Ursa/Events/KeyEvent.h"
 #include "Ursa/Renderer//Renderer.h"
 #include "Platform/OpenGL/OpenGLContext.h"
+#include <stb_image.h>
 
 namespace Ursa {
 	static uint8_t s_GLFWWindowCount = 0;
@@ -21,6 +22,15 @@ namespace Ursa {
 	WindowsWindow::~WindowsWindow() {
 		URSA_PROFILE_FUNCTION();
 		Shutdown();
+	}
+
+	void WindowsWindow::SetIcon(const std::string& filePath)
+	{
+		int width, height, nrChannels;
+		unsigned char* img = stbi_load(filePath.c_str(), &width, &height, &nrChannels, 4);
+		GLFWimage icon = { width, height, img };
+		glfwSetWindowIcon(m_Window, 1, &icon);
+		stbi_image_free(img);
 	}
 
 	void WindowsWindow::Init(const WindowProperties& props) {

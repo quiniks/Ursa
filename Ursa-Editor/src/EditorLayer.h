@@ -15,6 +15,12 @@ namespace Ursa {
 		void OnUpdate(TimeStep ts) override;
 		virtual void OnImGuiRender() override;
 		void OnEvent(Event& e) override;
+		
+	private:
+		bool OnKeyPressed(KeyPressedEvent& e);
+		void NewScene();
+		void OpenScene();
+		void SaveSceneAs();
 	private:
 		Ursa::OrthographicCameraController m_CameraController;
 
@@ -40,6 +46,6 @@ namespace Ursa {
 		SceneHierarchyPanel m_SceneHierarchyPanel;
 
 		//Gizmos
-		int m_GizmoType = -1;
+		int m_GizmoType = 0;
 	};
 }

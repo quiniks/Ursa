@@ -21,6 +21,8 @@ namespace Ursa {
 		bool IsVSync() const override;
 
 		inline virtual void* GetNativeWindow() const { return m_Window; }
+
+		void SetIcon(const std::string& filePath) override;
 	private:
 		virtual void Init(const WindowProperties& props);
 		virtual void Shutdown();

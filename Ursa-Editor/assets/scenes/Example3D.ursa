@@ -2,22 +2,20 @@ Scene: Untitled
 Entities:
   - Entity: 12837192831273
     TagComponent:
-      Tag: Camera
+      Tag: Empty Entity
     TransformComponent:
-      Translation: [0, 0, 5.19999981]
+      Translation: [0, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
-    CameraComponent:
-      Camera:
-        ProjectionType: 0
-        PerspectiveFOV: 0.785398185
-        PerspectiveNear: 0.00999999978
-        PerspectiveFar: 1000
-        OrthographicSize: 10
-        OrthographicNear: -1
-        OrthographicFar: 1
-      Primary: true
-      FixedAspectRatio: false
+  - Entity: 12837192831273
+    TagComponent:
+      Tag: Yellow
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [0.999840081, 0.999998808, 0.999999702]
+    SpriteComponent:
+      Color: [0.899999976, 0.899999976, 0.600000024, 1]
   - Entity: 12837192831273
     TagComponent:
       Tag: Blue
@@ -29,17 +27,19 @@ Entities:
       Color: [0.400000006, 0.800000012, 0.800000012, 1]
   - Entity: 12837192831273
     TagComponent:
-      Tag: Yellow
+      Tag: Camera
     TransformComponent:
-      Translation: [-1, 0, 0]
-      Rotation: [-0.738274276, 0.933751166, 0]
-      Scale: [1, 1, 1]
-    SpriteComponent:
-      Color: [0.899999976, 0.899999976, 0.600000024, 1]
-  - Entity: 12837192831273
-    TagComponent:
-      Tag: Empty Entity
-    TransformComponent:
-      Translation: [0, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
+      Translation: [1.89999998, 1.60000002, 4.5]
+      Rotation: [-0.268780708, 0.417133689, 0]
+      Scale: [0.999998927, 0.999999166, 0.999999642]
+    CameraComponent:
+      Camera:
+        ProjectionType: 0
+        PerspectiveFOV: 0.785398185
+        PerspectiveNear: 0.00999999978
+        PerspectiveFar: 1000
+        OrthographicSize: 10
+        OrthographicNear: -1
+        OrthographicFar: 1
+      Primary: true
+      FixedAspectRatio: false
