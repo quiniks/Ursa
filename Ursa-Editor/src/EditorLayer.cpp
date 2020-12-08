@@ -7,6 +7,7 @@
 #include "Ursa/Utils/PlatformUtils.h"
 #include "imguizmo/ImGuizmo.h"
 #include "Ursa/Math/Math.h"
+#include "fontawesome/FontAwesome5.h"
 
 namespace Ursa {
 
@@ -23,12 +24,19 @@ namespace Ursa {
 		m_TileSheet = Texture2D::Create("assets/textures/colored_transparent_packed.png");
 		m_UrsaTitle = Texture2D::Create("assets/textures/Ursa.png");
 
+		//Fonts
 		ImGuiIO& io = ImGui::GetIO();
 		io.Fonts->AddFontFromFileTTF("assets/fonts/Noto_Sans/NotoSans-Bold.ttf", 16.0f);
 		io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/fonts/Noto_Sans/NotoSans-Regular.ttf", 16.0f);
+		ImFontConfig config;
+		config.MergeMode = true;
+		config.GlyphMinAdvanceX = 16.0f;
+		static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+		io.Fonts->AddFontFromFileTTF("assets/fonts/FontAwesome5/fa-solid-900.ttf", 16.0f, &config, icon_ranges);
+		
+		//Style
 		ImGuiStyle& style = ImGui::GetStyle();
 		style.FrameRounding = 3.0f;
-		//style.
 		ImVec4* colors = style.Colors;
 		//Colors
 		{
@@ -54,8 +62,8 @@ namespace Ursa {
 			colors[ImGuiCol_CheckMark] = ImVec4(0.44f, 0.53f, 0.56f, 1.00f);
 			colors[ImGuiCol_SliderGrab] = ImVec4(0.44f, 0.53f, 0.56f, 1.00f);
 			colors[ImGuiCol_SliderGrabActive] = ImVec4(0.54f, 0.69f, 0.68f, 1.00f);
-			colors[ImGuiCol_Button] = ImVec4(0.15f, 0.18f, 0.20f, 1.00f);
-			colors[ImGuiCol_ButtonHovered] = ImVec4(0.24f, 0.28f, 0.32f, 1.00f);
+			colors[ImGuiCol_Button] = ImVec4(0.071f, 0.078f, 0.090f, 1.000f);
+			colors[ImGuiCol_ButtonHovered] = ImVec4(0.149f, 0.180f, 0.200f, 1.000f);
 			colors[ImGuiCol_ButtonActive] = ImVec4(0.15f, 0.18f, 0.20f, 1.00f);
 			colors[ImGuiCol_Header] = ImVec4(0.15f, 0.18f, 0.20f, 1.00f);
 			colors[ImGuiCol_HeaderHovered] = ImVec4(0.15f, 0.18f, 0.20f, 0.50f);
@@ -84,7 +92,6 @@ namespace Ursa {
 			colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
 			colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 		}
-
 
 		m_CameraController.SetZoomLevel(5.0f);
 
@@ -192,19 +199,7 @@ namespace Ursa {
 
 		if (opt_fullscreen)
 			ImGui::PopStyleVar(2);
-
-		// DockSpace
-		ImGuiIO& io = ImGui::GetIO();
-		ImGuiStyle& style = ImGui::GetStyle();
-		float minWinSize = style.WindowMinSize.x;
-		style.WindowMinSize.x = 370.0f;
-		if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
-		{
-			ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-		}
-		style.WindowMinSize.x = minWinSize;
-
+		
 		if (ImGui::BeginMenuBar())
 		{
 			if (ImGui::BeginMenu("File"))
@@ -243,6 +238,31 @@ namespace Ursa {
 			}
 			ImGui::EndMenuBar();
 		}
+
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 5.0f, 0 });
+		ImGui::Button(ICON_FA_ARROWS_ALT);
+		ImGui::SameLine();
+		ImGui::Button(ICON_FA_SYNC_ALT);
+		ImGui::SameLine();
+		ImGui::Button(ICON_FA_EXPAND_ARROWS_ALT);
+		ImGui::PopStyleVar(2);
+
+		// DockSpace
+		ImGuiIO& io = ImGui::GetIO();
+		ImGuiStyle& style = ImGui::GetStyle();
+		float minWinSize = style.WindowMinSize.x;
+		style.WindowMinSize.x = 370.0f;
+		if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+		{
+			ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+		}
+		style.WindowMinSize.x = minWinSize;
+
+		//ImGui::Begin("Buttons");
+		//ImGui::Button(ICON_FA_ARROWS_ALT);
+		//ImGui::End();
 
 		m_SceneHierarchyPanel.OnImGuiRender();
 

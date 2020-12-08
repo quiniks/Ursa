@@ -20,6 +20,8 @@ IncludeDir["stb_image"] = "Ursa/vendor/stb_image"
 IncludeDir["entt"] = "Ursa/vendor/entt/include"
 IncludeDir["yaml"] = "Ursa/vendor/yaml/include"
 IncludeDir["imguizmo"] = "Ursa/vendor/imguizmo"
+IncludeDir["spdlog"] = "Ursa/vendor/spdlog/include"
+IncludeDir["fontawe"] = "Ursa/vendor/fontawesome"
 
 group "Dependencies"
 	include "Ursa/vendor/GLFW"
@@ -50,11 +52,12 @@ project "Ursa"
 		"%{prj.name}/vendor/glm//**.inl",
 		"%{prj.name}/vendor/imguizmo/ImGuizmo.h",
 		"%{prj.name}/vendor/imguizmo/ImGuizmo.cpp",
+		"%{prj.name}/vendor/fontawesome/FontAwesome5.h"
 	}
 
 	includedirs {
 		"%{prj.name}/src",
-		"%{prj.name}/vendor/spdlog/include",
+		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
@@ -62,7 +65,8 @@ project "Ursa"
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.yaml}",
-		"%{IncludeDir.imguizmo}"
+		"%{IncludeDir.imguizmo}",
+		"%{IncludeDir.fontawe}"
 	}
 
 	links {

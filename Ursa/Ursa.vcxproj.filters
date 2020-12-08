@@ -28,6 +28,9 @@
     <Filter Include="src\Ursa\ImGui">
       <UniqueIdentifier>{C1190D63-ADE7-0069-967B-718F82E8DCCD}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Ursa\Math">
+      <UniqueIdentifier>{9052A58E-FC12-21C5-C54D-6A4231CD65A1}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Ursa\Renderer">
       <UniqueIdentifier>{DD3450F2-494B-4E88-92C2-D9A9FE171F10}</UniqueIdentifier>
     </Filter>
@@ -39,6 +42,9 @@
     </Filter>
     <Filter Include="vendor">
       <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\fontawesome">
+      <UniqueIdentifier>{AA6F0560-9653-C6B5-FFB3-C008EBB6B037}</UniqueIdentifier>
     </Filter>
     <Filter Include="vendor\glm">
       <UniqueIdentifier>{829FC5A8-6E57-07F6-D75E-E051C335A2E6}</UniqueIdentifier>
@@ -147,6 +153,9 @@
     <ClInclude Include="src\Ursa\ImGui\ImGuiLayer.h">
       <Filter>src\Ursa\ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="src\Ursa\Math\Math.h">
+      <Filter>src\Ursa\Math</Filter>
+    </ClInclude>
     <ClInclude Include="src\Ursa\Renderer\Buffer.h">
       <Filter>src\Ursa\Renderer</Filter>
     </ClInclude>
@@ -212,6 +221,9 @@
     </ClInclude>
     <ClInclude Include="src\ursapch.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\fontawesome\FontAwesome5.h">
+      <Filter>vendor\fontawesome</Filter>
     </ClInclude>
     <ClInclude Include="vendor\glm\glm\common.hpp">
       <Filter>vendor\glm\glm</Filter>
@@ -1443,7 +1455,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Ursa\Math\Math.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
@@ -1496,6 +1507,9 @@
     </ClCompile>
     <ClCompile Include="src\Ursa\ImGui\ImGuiLayer.cpp">
       <Filter>src\Ursa\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Ursa\Math\Math.cpp">
+      <Filter>src\Ursa\Math</Filter>
     </ClCompile>
     <ClCompile Include="src\Ursa\Renderer\Buffer.cpp">
       <Filter>src\Ursa\Renderer</Filter>
@@ -1554,6 +1568,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Ursa\Math\Math.cpp" />
   </ItemGroup>
 </Project>
