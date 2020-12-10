@@ -12,7 +12,7 @@
 namespace Ursa {
 
 	EditorLayer::EditorLayer()
-		:Layer("EditorLayer"), m_CameraController(1280.0f / 720.0f, true)
+		:Layer("EditorLayer")//, m_CameraController(1280.0f / 720.0f, true)
 	{
 		
 	}
@@ -37,7 +37,6 @@ namespace Ursa {
 		//Style
 		ImGuiStyle& style = ImGui::GetStyle();
 		style.FrameRounding = 3.0f;
-		ImVec4* colors = style.Colors;
 		//Colors
 		{
 			ImVec4* colors = ImGui::GetStyle().Colors;
@@ -62,7 +61,7 @@ namespace Ursa {
 			colors[ImGuiCol_CheckMark] = ImVec4(0.44f, 0.53f, 0.56f, 1.00f);
 			colors[ImGuiCol_SliderGrab] = ImVec4(0.44f, 0.53f, 0.56f, 1.00f);
 			colors[ImGuiCol_SliderGrabActive] = ImVec4(0.54f, 0.69f, 0.68f, 1.00f);
-			colors[ImGuiCol_Button] = ImVec4(0.071f, 0.078f, 0.090f, 1.000f);
+			colors[ImGuiCol_Button] = ImVec4(0.149f, 0.180f, 0.200f, 0.000f);
 			colors[ImGuiCol_ButtonHovered] = ImVec4(0.149f, 0.180f, 0.200f, 1.000f);
 			colors[ImGuiCol_ButtonActive] = ImVec4(0.15f, 0.18f, 0.20f, 1.00f);
 			colors[ImGuiCol_Header] = ImVec4(0.15f, 0.18f, 0.20f, 1.00f);
@@ -93,7 +92,7 @@ namespace Ursa {
 			colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 		}
 
-		m_CameraController.SetZoomLevel(5.0f);
+		//m_CameraController.SetZoomLevel(5.0f);
 
 		FrameBufferSpecification fbspec;
 		fbspec.Width = 1280;
@@ -101,6 +100,8 @@ namespace Ursa {
 		m_FrameBuffer = FrameBuffer::Create(fbspec);
 
 		m_ActiveScene = CreateRef<Scene>();
+
+		m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
 
 #if 0
 		m_CameraEntity = m_ActiveScene->CreateEntity("Camera");
@@ -142,20 +143,23 @@ namespace Ursa {
 			(fbspec.Width != m_ViewportSize.x || fbspec.Height != m_ViewportSize.y))
 		{
 			m_FrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-			m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
+			//m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
+			m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}
 
 		//Update
-		if (m_ViewportFocused)
-			m_CameraController.OnUpdate(ts);
+		if (m_ViewportFocused) {
+			//m_CameraController.OnUpdate(ts);
+		}
+		m_EditorCamera.OnUpdate();
 
 		//Render
 		Renderer2D::ResetStats();
 		m_FrameBuffer->Bind();
 		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		RenderCommand::Clear();
-		m_ActiveScene->OnUpdate(ts);
+		m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
 		m_FrameBuffer->Unbind();
 	}
 
@@ -240,12 +244,18 @@ namespace Ursa {
 		}
 
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 5.0f, 0 });
-		ImGui::Button(ICON_FA_ARROWS_ALT);
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 2.0f, 0 });
+		if (ImGui::Button(ICON_FA_MOUSE_POINTER))
+			m_GizmoType = -1;
 		ImGui::SameLine();
-		ImGui::Button(ICON_FA_SYNC_ALT);
+		if (ImGui::Button(ICON_FA_ARROWS_ALT))
+			m_GizmoType = 0;
 		ImGui::SameLine();
-		ImGui::Button(ICON_FA_EXPAND_ARROWS_ALT);
+		if (ImGui::Button(ICON_FA_SYNC_ALT))
+			m_GizmoType = 1;
+		ImGui::SameLine();
+		if (ImGui::Button(ICON_FA_EXPAND_ARROWS_ALT))
+			m_GizmoType = 2;
 		ImGui::PopStyleVar(2);
 
 		// DockSpace
@@ -260,12 +270,7 @@ namespace Ursa {
 		}
 		style.WindowMinSize.x = minWinSize;
 
-		//ImGui::Begin("Buttons");
-		//ImGui::Button(ICON_FA_ARROWS_ALT);
-		//ImGui::End();
-
 		m_SceneHierarchyPanel.OnImGuiRender();
-
 		
 		if (m_StatsOpen) {
 			ImGui::Begin("Stats", &m_StatsOpen, ImGuiWindowFlags_NoCollapse);
@@ -300,12 +305,6 @@ namespace Ursa {
 			ImGuizmo::SetDrawlist();
 			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, rw, rh);
 
-			//Camera
-			Entity cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
-			const auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
-			glm::mat4 cameraTransform = cameraEntity.GetComponent<TransformComponent>().GetTransform();
-			glm::mat4 cameraView = glm::inverse(cameraTransform);
-
 			//Selected Entity
 			TransformComponent& selectedEntityTransformComponent = selectedEntity.GetComponent<TransformComponent>();
 			glm::mat4 selectedEntityTransform = selectedEntityTransformComponent.GetTransform();
@@ -319,8 +318,8 @@ namespace Ursa {
 			//ImGuizmo::DrawGrid(glm::value_ptr(cameraView), glm::value_ptr(camera.GetProjection()), glm::value_ptr(glm::mat4(1.0f)), 10.f);
 			
 			ImGuizmo::Manipulate(
-				glm::value_ptr(cameraView),
-				glm::value_ptr(camera.GetProjection()),
+				glm::value_ptr(m_EditorCamera.GetView()),
+				glm::value_ptr(m_EditorCamera.GetProjection()),
 				(ImGuizmo::OPERATION)m_GizmoType,
 				ImGuizmo::LOCAL,
 				glm::value_ptr(selectedEntityTransform),
@@ -350,7 +349,7 @@ namespace Ursa {
 
 	void EditorLayer::OnEvent(Event& e)
 	{
-		m_CameraController.OnEvent(e);
+		//m_CameraController.OnEvent(e);
 
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<KeyPressedEvent>(URSA_BIND_EVENT_FN(EditorLayer::OnKeyPressed));

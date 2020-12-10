@@ -179,6 +179,7 @@
     <ClInclude Include="src\Ursa\Math\Math.h" />
     <ClInclude Include="src\Ursa\Renderer\Buffer.h" />
     <ClInclude Include="src\Ursa\Renderer\Camera.h" />
+    <ClInclude Include="src\Ursa\Renderer\EditorCamera.h" />
     <ClInclude Include="src\Ursa\Renderer\FrameBuffer.h" />
     <ClInclude Include="src\Ursa\Renderer\OrthographicCamera.h" />
     <ClInclude Include="src\Ursa\Renderer\OrthographicCameraController.h" />
@@ -631,6 +632,7 @@
     <ClCompile Include="src\Ursa\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\Ursa\Math\Math.cpp" />
     <ClCompile Include="src\Ursa\Renderer\Buffer.cpp" />
+    <ClCompile Include="src\Ursa\Renderer\EditorCamera.cpp" />
     <ClCompile Include="src\Ursa\Renderer\FrameBuffer.cpp" />
     <ClCompile Include="src\Ursa\Renderer\OrthographicCamera.cpp" />
     <ClCompile Include="src\Ursa\Renderer\OrthographicCameraController.cpp" />

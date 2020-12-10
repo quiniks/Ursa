@@ -3,6 +3,7 @@
 
 #include "imgui/imgui.h"
 #include "Panels/SceneHierarchyPanel.h"
+#include "Ursa/Renderer/EditorCamera.h"
 
 namespace Ursa {
 	class EditorLayer : public Layer {
@@ -22,7 +23,8 @@ namespace Ursa {
 		void OpenScene();
 		void SaveSceneAs();
 	private:
-		Ursa::OrthographicCameraController m_CameraController;
+		EditorCamera m_EditorCamera;
+		//Ursa::OrthographicCameraController m_CameraController;
 
 		Ref<Scene> m_ActiveScene;
 		Entity m_QuadEntity;
