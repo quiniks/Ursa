@@ -1,58 +1,109 @@
 #include "ursapch.h"
 #include "EditorCamera.h"
+#include "Ursa/Core/Input.h"
+#include "Ursa/Core/KeyCodes.h"
+#include "Ursa/Core/MouseCodes.h"
 #include <glm/gtc/matrix_transform.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
 
 namespace Ursa {
 	EditorCamera::EditorCamera(float fov, float aspectRatio, float nearClip, float farClip) 
 		: m_FOV(fov), m_AspectRatio(aspectRatio), m_NearClip(nearClip), m_FarClip(farClip)
 	{
+		UpdateLook();
 		UpdateView();
-		UpdateProjection();
 	}
 
-	void EditorCamera::OnUpdate()
+	void EditorCamera::OnUpdate(TimeStep ts)
 	{
+		UpdateLook();
+		Pan(ts);
+		Rotate();
 		UpdateView();
+	}
+
+	void EditorCamera::SetViewportSize(float width, float height)
+	{
+		m_ViewportWidth = width; m_ViewportHeight = height;
 		UpdateProjection();
-		m_Pitch = m_Pitch + 0.001f;
 	}
 
 	void EditorCamera::UpdateView()
 	{
-		float cosPitch = cos(m_Pitch);
-		float sinPitch = sin(m_Pitch);
-		float cosYaw = cos(m_Yaw);
-		float sinYaw = sin(m_Yaw);
+		m_ViewMatrix[0][0] = -m_Right.x;
+		m_ViewMatrix[1][0] = -m_Right.y;
+		m_ViewMatrix[2][0] = -m_Right.z;
 
-		glm::vec3 right =	{ cosYaw, 0, -sinYaw };								
-		glm::vec3 up =		{ sinYaw * sinPitch, cosPitch, cosYaw * sinPitch };
-		glm::vec3 forward = { sinYaw * cosPitch, -sinPitch, cosPitch * cosYaw };
+		m_ViewMatrix[0][1] = -m_Up.x;
+		m_ViewMatrix[1][1] = -m_Up.y;
+		m_ViewMatrix[2][1] = -m_Up.z;
 
-		m_ViewMatrix[0][0] = -right.x;
-		m_ViewMatrix[1][0] = -right.y;
-		m_ViewMatrix[2][0] = -right.z;
+		m_ViewMatrix[0][2] = m_Forward.x;
+		m_ViewMatrix[1][2] = m_Forward.y;
+		m_ViewMatrix[2][2] = m_Forward.z;
 
-		m_ViewMatrix[0][1] = -up.x;
-		m_ViewMatrix[1][1] = -up.y;
-		m_ViewMatrix[2][1] = -up.z;
-
-		m_ViewMatrix[0][2] = forward.x;
-		m_ViewMatrix[1][2] = forward.y;
-		m_ViewMatrix[2][2] = forward.z;
-
-		m_ViewMatrix[3][0] = glm::dot(right, m_Position);
-		m_ViewMatrix[3][1] = glm::dot(up, m_Position);
-		m_ViewMatrix[3][2] = -glm::dot(forward, m_Position);
+		m_ViewMatrix[3][0] = glm::dot(m_Right, m_Position);
+		m_ViewMatrix[3][1] = glm::dot(m_Up, m_Position);
+		m_ViewMatrix[3][2] = -glm::dot(m_Forward, m_Position);
 
 		m_ViewMatrix[0][3] = 0;
 		m_ViewMatrix[1][3] = 0;
 		m_ViewMatrix[2][3] = 0;
 		m_ViewMatrix[3][3] = 1;
+		
 	}
 
 	void EditorCamera::UpdateProjection()
 	{
 		m_AspectRatio = m_ViewportWidth / m_ViewportHeight;
 		m_ProjectionMatrix = glm::perspective(m_FOV, m_AspectRatio, m_NearClip, m_FarClip);
+	}
+
+	void EditorCamera::UpdateLook()
+	{
+		float cosPitch = cos(m_Pitch);
+		float sinPitch = sin(m_Pitch);
+		float cosYaw = cos(m_Yaw);
+		float sinYaw = sin(m_Yaw);
+
+		m_Right = { cosYaw, 0, -sinYaw };
+		m_Up = { sinYaw * sinPitch, cosPitch, cosYaw * sinPitch };
+		m_Forward = { sinYaw * cosPitch, -sinPitch, cosPitch * cosYaw };
+	}
+
+	void EditorCamera::Pan(TimeStep ts)
+	{
+		m_PanSpeed = m_PanSpeed + (m_PanAccel * ts);
+		if (m_PanSpeed > m_PanMaxSpeed)
+			m_PanSpeed = m_PanMaxSpeed;
+		URSA_CORE_TRACE("speed: {0}", m_PanSpeed);
+
+		if (Input::IsKeyPressed(Key::W))
+			m_Position += m_Forward * -m_PanSpeed;
+		else if (Input::IsKeyPressed(Key::S))
+			m_Position += m_Forward * m_PanSpeed;
+		else if (Input::IsKeyPressed(Key::D))
+			m_Position += m_Right * m_PanSpeed;
+		else if (Input::IsKeyPressed(Key::A))
+			m_Position += m_Right * -m_PanSpeed;
+		else if (Input::IsKeyPressed(Key::E))
+			m_Position += m_Up * m_PanSpeed;
+		else if (Input::IsKeyPressed(Key::Q))
+			m_Position += m_Up * -m_PanSpeed;
+		else
+			m_PanSpeed = 0.0f;
+	}
+
+	void EditorCamera::Rotate()
+	{
+		const glm::vec2& mouse{ Input::GetMouseX(), Input::GetMouseY() };
+		glm::vec2 delta = (mouse - m_PreviousMouse) * m_Sensitivity;
+		m_PreviousMouse = mouse;
+
+		if (Input::IsMouseButtonPressed(Mouse::ButtonRight)) {
+			m_Yaw += delta.x * -m_RotationSpeed;
+			m_Pitch += delta.y * -m_RotationSpeed;
+		}
 	}
 }
