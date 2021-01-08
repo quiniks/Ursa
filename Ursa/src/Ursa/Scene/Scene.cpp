@@ -4,6 +4,7 @@
 #include "Ursa/Renderer/Renderer2D.h"
 #include "Entity.h"
 #include <glm/glm.hpp>
+#include <glad/glad.h>
 
 namespace Ursa {
 	Scene::Scene()
@@ -63,7 +64,7 @@ namespace Ursa {
 			auto group = m_Registry.group<TransformComponent>(entt::get<SpriteComponent>);
 			for (auto entity : group) {
 				auto [transformComponent, spriteComponent] = group.get<TransformComponent, SpriteComponent>(entity);
-				Renderer2D::DrawQuad(transformComponent.GetTransform(), spriteComponent.Color);
+				Renderer2D::DrawQuad(transformComponent.GetTransform(), spriteComponent.Color, (uint32_t)entity);
 			}
 
 			Renderer2D::EndScene();
@@ -78,7 +79,7 @@ namespace Ursa {
 		auto group = m_Registry.group<TransformComponent>(entt::get<SpriteComponent>);
 		for (auto entity : group) {
 			auto [transformComponent, spriteComponent] = group.get<TransformComponent, SpriteComponent>(entity);
-			Renderer2D::DrawQuad(transformComponent.GetTransform(), spriteComponent.Color);
+			Renderer2D::DrawQuad(transformComponent.GetTransform(), spriteComponent.Color, (uint32_t)entity);
 		}
 
 		Renderer2D::EndScene();
@@ -96,6 +97,14 @@ namespace Ursa {
 			if (!cameraComponent.FixedAspectRatio)
 				cameraComponent.Camera.SetViewportSize(width, height);
 		}
+	}
+
+	int Scene::Pixel(int x, int y)
+	{
+		glReadBuffer(GL_COLOR_ATTACHMENT1);
+		int pixelData;
+		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
+		return pixelData;
 	}
 
 	Entity Scene::GetPrimaryCameraEntity()

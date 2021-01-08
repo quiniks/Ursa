@@ -1,7 +1,10 @@
 #pragma once
-#include "entt.hpp"
+
 #include "Ursa/Core/TimeStep.h"
 #include "Ursa/Renderer/EditorCamera.h"
+#include "Ursa/Renderer/FrameBuffer.h"
+#include "entt.hpp"
+
 
 namespace Ursa {
 	class Entity;
@@ -15,6 +18,7 @@ namespace Ursa {
 		void OnUpdateRuntime(TimeStep ts);
 		void OnUpdateEditor(TimeStep ts, EditorCamera& camera);
 		void OnViewportResize(uint32_t width, uint32_t height);
+		int Pixel(int x, int y);
 		Entity GetPrimaryCameraEntity();
 	private:
 		template<typename T>

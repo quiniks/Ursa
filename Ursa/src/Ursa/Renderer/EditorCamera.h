@@ -19,6 +19,7 @@ namespace Ursa {
 		void Pan(TimeStep ts);
 		void Rotate();
 	private:
+		bool m_Moving = false;
 		float m_FOV = 45.0f;
 		float m_AspectRatio = 1.778f;
 		float m_NearClip = 0.1f;

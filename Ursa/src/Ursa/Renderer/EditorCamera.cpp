@@ -20,7 +20,9 @@ namespace Ursa {
 		UpdateLook();
 		Pan(ts);
 		Rotate();
-		UpdateView();
+		if (m_Moving)
+			UpdateView();
+		m_Moving = false;
 	}
 
 	void EditorCamera::SetViewportSize(float width, float height)
@@ -77,20 +79,40 @@ namespace Ursa {
 		m_PanSpeed = m_PanSpeed + (m_PanAccel * ts);
 		if (m_PanSpeed > m_PanMaxSpeed)
 			m_PanSpeed = m_PanMaxSpeed;
-		URSA_CORE_TRACE("speed: {0}", m_PanSpeed);
 
-		if (Input::IsKeyPressed(Key::W))
-			m_Position += m_Forward * -m_PanSpeed;
-		else if (Input::IsKeyPressed(Key::S))
-			m_Position += m_Forward * m_PanSpeed;
-		else if (Input::IsKeyPressed(Key::D))
-			m_Position += m_Right * m_PanSpeed;
-		else if (Input::IsKeyPressed(Key::A))
-			m_Position += m_Right * -m_PanSpeed;
-		else if (Input::IsKeyPressed(Key::E))
-			m_Position += m_Up * m_PanSpeed;
-		else if (Input::IsKeyPressed(Key::Q))
-			m_Position += m_Up * -m_PanSpeed;
+		float up = 0;
+		float forward = 0;
+		float right = 0;
+
+		if (!Input::IsKeyPressed(Key::LeftControl)) {
+			if (Input::IsKeyPressed(Key::W)) {
+				forward = -1;
+				m_Moving = true;
+			}
+			if (Input::IsKeyPressed(Key::S)) {
+				forward = 1;
+				m_Moving = true;
+			}
+			if (Input::IsKeyPressed(Key::D)) {
+				right = 1;
+				m_Moving = true;
+			}
+			if (Input::IsKeyPressed(Key::A)) {
+				right = -1;
+				m_Moving = true;
+			}
+			if (Input::IsKeyPressed(Key::E)) {
+				up = 1;
+				m_Moving = true;
+			}
+			if (Input::IsKeyPressed(Key::Q)) {
+				up = -1;
+				m_Moving = true;
+			}
+		}
+
+		if (m_Moving)
+			m_Position += glm::normalize(m_Forward * forward + m_Up * up + m_Right * right) * m_PanSpeed;
 		else
 			m_PanSpeed = 0.0f;
 	}
@@ -102,6 +124,7 @@ namespace Ursa {
 		m_PreviousMouse = mouse;
 
 		if (Input::IsMouseButtonPressed(Mouse::ButtonRight)) {
+			m_Moving = true;
 			m_Yaw += delta.x * -m_RotationSpeed;
 			m_Pitch += delta.y * -m_RotationSpeed;
 		}

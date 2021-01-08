@@ -98,6 +98,7 @@ namespace Ursa {
 		fbspec.Width = 1280;
 		fbspec.Height = 720;
 		m_FrameBuffer = FrameBuffer::Create(fbspec);
+		//m_IDFrameBuffer = FrameBuffer::Create(fbspec);
 
 		m_ActiveScene = CreateRef<Scene>();
 
@@ -143,14 +144,13 @@ namespace Ursa {
 			(fbspec.Width != m_ViewportSize.x || fbspec.Height != m_ViewportSize.y))
 		{
 			m_FrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-			//m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
+			//m_IDFrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 			m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}
 
 		//Update
 		if (m_ViewportFocused) {
-			//m_CameraController.OnUpdate(ts);
 			m_EditorCamera.OnUpdate(ts);
 		}
 		
@@ -160,7 +160,24 @@ namespace Ursa {
 		m_FrameBuffer->Bind();
 		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		RenderCommand::Clear();
+		m_FrameBuffer->Bind();
+		//Update Scene
 		m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
+
+		auto [mx, my] = ImGui::GetMousePos();
+		mx -= m_ViewportBounds[0].x;
+		my -= m_ViewportBounds[0].y;
+		auto viewportHeight = m_ViewportBounds[1].y - m_ViewportBounds[0].y;
+		auto viewportWidth = m_ViewportBounds[1].x - m_ViewportBounds[0].x;
+		my = viewportHeight - my;
+		int mxi = (int)mx;
+		int myi = (int)my;
+		if (mxi >= 0.0f && myi >= 0.0f && mxi < viewportWidth && myi < viewportHeight) {
+			int pixel = m_ActiveScene->Pixel(mx, my);
+			m_HoveredEntity = pixel == -1 ? Entity() : Entity((entt::entity)pixel, m_ActiveScene.get());
+			URSA_CORE_WARN("ID: {0}", pixel);
+		}
+
 		m_FrameBuffer->Unbind();
 	}
 
@@ -275,17 +292,26 @@ namespace Ursa {
 		
 		if (m_StatsOpen) {
 			ImGui::Begin("Stats", &m_StatsOpen, ImGuiWindowFlags_NoCollapse);
+
 			auto stats = Renderer2D::GetStats();
 			ImGui::Text("Renderer2D stats");
 			ImGui::Text("Draw calls: %d", stats.DrawCalls);
 			ImGui::Text("Quads: %d", stats.QuadCount);
 			ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
 			ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+			
+			std::string name = "Null";
+			if ((entt::entity)m_HoveredEntity != entt::null)
+				name = m_HoveredEntity.GetComponent<TagComponent>().Tag;
+			ImGui::Text("Hovered Entity: %s", name.c_str());
+			
 			ImGui::End();
 		}
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
 		ImGui::Begin("Viewport");
+
+		auto viewportOffset = ImGui::GetCursorPos();
 
 		m_ViewportFocused = ImGui::IsWindowFocused();
 		m_ViewportHovered = ImGui::IsWindowHovered();
@@ -297,6 +323,14 @@ namespace Ursa {
 		uint32_t textureID = m_FrameBuffer->GetColorAttachmentRendererID();
 		ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 		
+		auto windowSize = ImGui::GetWindowSize();
+		ImVec2 minBound = ImGui::GetWindowPos();
+		minBound.x += viewportOffset.x;
+		minBound.y += viewportOffset.y;
+		ImVec2 maxBound = { minBound.x + windowSize.x, minBound.y + windowSize.y };
+		m_ViewportBounds[0] = { minBound.x, minBound.y };
+		m_ViewportBounds[1] = { maxBound.x, maxBound.y };
+
 		//Gizmos
 		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
 		if (m_GizmoType != -1 && selectedEntity) {
@@ -350,10 +384,9 @@ namespace Ursa {
 
 	void EditorLayer::OnEvent(Event& e)
 	{
-		//m_CameraController.OnEvent(e);
-
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<KeyPressedEvent>(URSA_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
+		dispatcher.Dispatch<MouseButtonPressedEvent>(URSA_BIND_EVENT_FN(EditorLayer::OnMouseButtonPressed));
 	}
 
 	bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
@@ -388,18 +421,27 @@ namespace Ursa {
 			break;
 		}
 		case Key::Q:
-			m_GizmoType = -1;
+			if (CTRL)
+				m_GizmoType = -1;
 			break;
 		case Key::W:
-			m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+			if (CTRL)
+				m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 			break;
 		case Key::E:
-			m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+			if (CTRL)
+				m_GizmoType = ImGuizmo::OPERATION::ROTATE;
 			break;
 		case Key::R:
-			m_GizmoType = ImGuizmo::OPERATION::SCALE;
+			if (CTRL)
+				m_GizmoType = ImGuizmo::OPERATION::SCALE;
 			break;
 		}
+	}
+
+	bool EditorLayer::OnMouseButtonPressed(MouseButtonEvent& e)
+	{
+		return false;
 	}
 
 	void EditorLayer::NewScene()

@@ -12,6 +12,7 @@ namespace Ursa {
 		glm::vec2 TexCoord;
 		glm::vec2 TexScale;
 		float TexIndex;
+		int ObjectID;
 	};
 
 	struct Renderer2DData {
@@ -51,7 +52,8 @@ namespace Ursa {
 			{ ShaderDataType::Float4, "a_Color" },
 			{ ShaderDataType::Float2, "a_TexCoord" },
 			{ ShaderDataType::Float2, "a_TexScale" },
-			{ ShaderDataType::Float, "a_TexIndex" }
+			{ ShaderDataType::Float, "a_TexIndex" },
+			{ ShaderDataType::Int, "a_ObjectID" }
 			});
 		s_Data.QuadVA->AddVertexBuffer(s_Data.QuadVB);
 
@@ -186,7 +188,7 @@ namespace Ursa {
 			glm::rotate(glm::mat4(1.0f), rotation, { 0.0f, 0.0f, 1.0f }) *
 			glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
-		DrawQuad(transform, color);
+		DrawQuad(transform, color, 0); //TODO: dont really use id yet
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const Ref<Texture2D>& texture, const glm::vec2& tiling, const glm::vec4& tint)
@@ -248,7 +250,7 @@ namespace Ursa {
 		s_Data.Stats.QuadCount++;
 	}
 
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color)
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, uint32_t entityID)
 	{
 		URSA_PROFILE_FUNCTION();
 
@@ -266,6 +268,7 @@ namespace Ursa {
 			s_Data.QuadVBPtr->TexCoord = textureCoords[i];
 			s_Data.QuadVBPtr->TexScale = tiling;
 			s_Data.QuadVBPtr->TexIndex = whiteTexIndex;
+			s_Data.QuadVBPtr->ObjectID = entityID;
 			s_Data.QuadVBPtr++;
 		}
 
